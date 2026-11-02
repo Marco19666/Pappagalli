@@ -215,3 +215,34 @@ kbd { color: #9aa49d; font-size: 10px; border: 1px solid var(--line); padding: 4
 .curiosity-card { padding: 28px; border-radius: 18px; background: #fffefa; box-shadow: var(--shadow); }
 .curiosity-card p { min-height: 48px; margin: 0 0 20px; color: #34463c; font-size: 16px; line-height: 1.7; }
 @media (max-width: 650px) { .curiosity-inner { grid-template-columns: 1fr; gap: 18px; } }
+
+/* Contrasto più netto e fotografie interamente visibili */
+:root {
+  --muted: #39483f;
+  --line: #d2dbd0;
+}
+body { color: #17251e; }
+.intro-grid p, .muted, .guide-card p, .detail-text {
+  color: #39483f;
+}
+.section-kicker, .catalog-label, .scientific-name {
+  color: #455d49;
+}
+.filter-row label, .journal-form label, .tool-inputs label {
+  color: #34463a;
+}
+.results-bar, .card-bottom span {
+  color: #45564a;
+}
+.species-image, .dialog-image {
+  object-fit: contain;
+  object-position: center;
+  background: #e7ede4;
+}
+.species-image { padding: 5px; }
+.dialog-image { padding: 8px; }
+.species-card { border-color: #cbd6ca; }
+.search-panel, .tool-card, .journal-form {
+  border-color: #cbd6ca;
+}
+
