@@ -203,6 +203,25 @@
               <button class="text-link quiz-next hidden" id="nextQuestion">Prossima domanda →</button>
             </div>
           </article>
+          <article class="tool-card comparison-card">
+            <span class="tool-icon">⚖️</span>
+            <h3>Confronta due specie</h3>
+            <p>Scegli due pappagalli e confronta a colpo d'occhio le loro caratteristiche.</p>
+            <div class="compare-selects">
+              <label>Prima specie<select id="compareFirst"></select></label>
+              <label>Seconda specie<select id="compareSecond"></select></label>
+            </div>
+            <div id="comparisonResult" class="comparison-result" aria-live="polite"></div>
+          </article>
+          <article class="tool-card photo-quiz-card">
+            <span class="tool-icon">🔎</span>
+            <h3>Indovina la specie</h3>
+            <p>Osserva la fotografia e scegli il nome corretto.</p>
+            <div id="photoQuizImage" class="photo-quiz-image"><span>Prepariamo la sfida…</span></div>
+            <div id="photoQuizOptions" class="quiz-options"></div>
+            <p id="photoQuizResult" class="tool-result" aria-live="polite"></p>
+            <button class="text-link hidden" id="nextPhotoQuestion" type="button">Altra specie →</button>
+          </article>
         </div>
       </div>
     </section>
