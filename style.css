@@ -375,3 +375,20 @@ body, button, input, select, textarea {
 .quiz-options button.correct { background:#e0efdf; border-color:#55834d; }
 .quiz-options button.wrong { background:#f8e4e1; border-color:#b65b4d; }
 @media (max-width:650px) { .compare-selects { grid-template-columns:1fr; } .comparison-head,.comparison-row { font-size:10px; gap:5px; } }
+
+/* Header: separazione più evidente tra marchio e navigazione */
+.site-header { column-gap: clamp(20px, 3vw, 44px); }
+.brand { flex: 0 0 auto; white-space: nowrap; margin-right: clamp(12px, 2vw, 28px); }
+.site-header nav { flex: 1 1 auto; justify-content: center; gap: clamp(18px, 2.4vw, 32px); min-width: 0; }
+.header-cta { flex: 0 0 auto; white-space: nowrap; margin-left: clamp(12px, 2vw, 26px); }
+@media (max-width: 900px) and (min-width: 651px) {
+  .site-header { padding-inline: 4%; column-gap: 14px; }
+  .brand { margin-right: 6px; font-size: 17px; }
+  .site-header nav { gap: 13px; font-size: 11px; }
+  .header-cta { margin-left: 6px; padding: 10px 12px; font-size: 10px; }
+}
+@media (max-width: 650px) {
+  .site-header { column-gap: 8px; }
+  .brand { margin-right: auto; }
+  .header-cta { margin-left: 0; margin-right: 8px; }
+}
