@@ -508,6 +508,29 @@ function exportJournal() {
   URL.revokeObjectURL(url);
 }
 
+
+const curiosities = [
+  "I pappagalli usano spesso il becco anche come una terza mano per arrampicarsi.",
+  "In molte specie il piumaggio colorato dipende anche da strutture microscopiche delle penne, non solo dai pigmenti.",
+  "I pappagalli sono animali sociali: in natura molte specie vivono in coppie o gruppi.",
+  "Alcune specie possono imitare suoni e voci, ma la capacità varia molto da individuo a individuo.",
+  "Il becco continua a crescere durante la vita e si consuma con l'uso naturale.",
+  "La ricerca del cibo e i giochi di problem solving sono importanti forme di arricchimento."
+];
+function setupCuriosita() {
+  const button = $("#newCuriosity");
+  const text = $("#curiosityText");
+  if (!button || !text) return;
+  let previous = -1;
+  button.addEventListener("click", () => {
+    let next = Math.floor(Math.random() * curiosities.length);
+    if (curiosities.length > 1) while (next === previous) next = Math.floor(Math.random() * curiosities.length);
+    previous = next;
+    text.textContent = curiosities[next];
+  });
+  text.textContent = curiosities[0];
+}
+
 function init() {
   $("#currentYear").textContent = new Date().getFullYear();
   setupFilters();
@@ -516,6 +539,7 @@ function init() {
   setupWeightCalculator();
   setupQuiz();
   setupJournal();
+  setupCuriosita();
   loadSpecies();
 }
 
