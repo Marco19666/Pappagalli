@@ -392,3 +392,29 @@ body, button, input, select, textarea {
   .brand { margin-right: auto; }
   .header-cta { margin-left: 0; margin-right: 8px; }
 }
+
+
+/* Atlante geografico interattivo */
+.world-map-section { padding: 88px 0; background: #f1f4ee; }
+.map-layout { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(230px, .75fr); gap: 22px; margin-top: 28px; align-items: stretch; }
+.world-map { min-height: 480px; border-radius: 16px; overflow: hidden; border: 1px solid var(--line); background: #e3ebe4; z-index: 0; }
+.map-loading { padding: 25px; color: #39483f; font-size: 13px; }
+.map-sidebar { background: #fffefa; border: 1px solid var(--line); border-radius: 16px; padding: 22px; }
+.map-sidebar h3 { margin: 0 0 7px; font: 700 18px Manrope,sans-serif; color: var(--ink); }
+.map-help, .map-disclaimer { color: #536157; font-size: 11px; line-height: 1.65; }
+.map-region-list { display: grid; gap: 7px; margin: 18px 0; max-height: 315px; overflow-y: auto; }
+.map-region-button { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 11px; border: 1px solid var(--line); border-radius: 9px; background: #fff; color: #26392e; text-align: left; font-size: 11px; cursor: pointer; }
+.map-region-button:hover, .map-region-button.active { border-color: #718b6e; background: #edf3e9; }
+.map-region-button strong { color: #365b42; font-size: 12px; }
+.map-disclaimer { border-top: 1px solid var(--line); padding-top: 13px; margin-bottom: 0; }
+.map-popup { max-width: 250px; color: #26392e; }
+.map-popup p { margin: 5px 0; font-size: 11px; }
+.map-popup ul { padding-left: 17px; margin: 7px 0 0; max-height: 170px; overflow-y: auto; font-size: 11px; line-height: 1.55; }
+.map-popup em { color: #637166; }
+@media (max-width: 760px) {
+  .world-map-section { padding: 65px 0; }
+  .map-layout { grid-template-columns: 1fr; }
+  .world-map { min-height: 360px; }
+  .map-region-list { grid-template-columns: 1fr 1fr; max-height: none; }
+}
+@media (max-width: 420px) { .map-region-list { grid-template-columns: 1fr; } }
