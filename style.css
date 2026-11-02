@@ -319,3 +319,9 @@ body, button, input, select, textarea {
   .scientific-name { font-size: 11px; }
   .species-tags span { font-size: 9px; }
 }
+
+/* Mantiene il testo chiaro sulle schede guida a fondo verde */
+.guide-feature p { color: #e4eee7 !important; }
+.guide-feature .guide-number { color: #d4e3d8 !important; }
+.warning-note { color: #263b2d; background: #f4f1e5; }
+.warning-note p { color: #263b2d !important; }
