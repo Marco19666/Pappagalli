@@ -358,3 +358,20 @@ body, button, input, select, textarea {
   font-weight: 800;
 }
 .audio-note { color: #425447; font-size: 11px; line-height: 1.6; }
+
+/* Nuovi strumenti: confronto e quiz fotografico */
+.compare-selects { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:18px 0; }
+.compare-selects label { display:grid; gap:7px; color:#20382a; font-size:12px; font-weight:800; }
+.compare-selects select { width:100%; min-width:0; padding:11px; border:1px solid #cbd6ca; border-radius:9px; background:#fff; color:#17271d; }
+.comparison-result { overflow-x:auto; margin-top:14px; }
+.comparison-head, .comparison-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; padding:10px 7px; border-bottom:1px solid #e0e7de; font-size:11px; }
+.comparison-head { color:#173f35; font-size:12px; font-weight:800; }
+.comparison-row span:first-child { color:#526356; font-weight:800; }
+.comparison-row span:not(:first-child) { color:#263b2d; }
+.photo-quiz-image { display:flex; align-items:center; justify-content:center; min-height:190px; margin:16px 0; padding:8px; border-radius:12px; background:#e8eee5; color:#34463c; text-align:center; }
+.photo-quiz-image img { display:block; width:100%; height:220px; object-fit:contain; }
+.photo-quiz-card .quiz-options { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.photo-quiz-card .quiz-options button { padding:11px; border:1px solid #cbd6ca; border-radius:9px; background:#fff; color:#20382a; text-align:left; font-weight:700; }
+.quiz-options button.correct { background:#e0efdf; border-color:#55834d; }
+.quiz-options button.wrong { background:#f8e4e1; border-color:#b65b4d; }
+@media (max-width:650px) { .compare-selects { grid-template-columns:1fr; } .comparison-head,.comparison-row { font-size:10px; gap:5px; } }
