@@ -240,6 +240,8 @@ function openSpecies(id) {
     <h3>Cura e comportamento</h3>
     <p class="detail-text">${escapeHTML(item.care)}</p>
     <p class="detail-text"><strong>Nota:</strong> dimensioni, peso e longevità sono valori orientativi, variabili tra individui e sottospecie. Verifica sempre le informazioni con fonti specialistiche.</p>
+    <a class="sound-link" href="https://xeno-canto.org/explore?query=${encodeURIComponent(item.scientific)}" target="_blank" rel="noopener noreferrer">♫ Cerca e ascolta registrazioni del verso su Xeno-canto ↗</a>
+    <p class="audio-note">Si apre l'archivio di registrazioni naturalistiche: la disponibilità dipende dalla specie e i file sono pubblicati dai contributori.</p>
     <a class="source-link" href="${safeWikipediaUrl(item.source)}" target="_blank" rel="noopener noreferrer">Consulta la scheda di Wikipedia ↗</a>
   `;
 
@@ -510,12 +512,26 @@ function exportJournal() {
 
 
 const curiosities = [
-  "I pappagalli usano spesso il becco anche come una terza mano per arrampicarsi.",
-  "In molte specie il piumaggio colorato dipende anche da strutture microscopiche delle penne, non solo dai pigmenti.",
-  "I pappagalli sono animali sociali: in natura molte specie vivono in coppie o gruppi.",
-  "Alcune specie possono imitare suoni e voci, ma la capacità varia molto da individuo a individuo.",
-  "Il becco continua a crescere durante la vita e si consuma con l'uso naturale.",
-  "La ricerca del cibo e i giochi di problem solving sono importanti forme di arricchimento."
+  "Molti pappagalli usano il becco come un appoggio aggiuntivo durante l'arrampicata.",
+  "Le zampe zigodattili hanno due dita rivolte in avanti e due all'indietro: una presa molto efficace.",
+  "In diverse specie la coppia mantiene legami sociali duraturi, ma i comportamenti variano tra specie e individui.",
+  "Alcuni pappagalli imparano a distinguere suoni e richiami del proprio gruppo.",
+  "L'imitazione della voce umana non è una capacità uguale per tutti i pappagalli.",
+  "Il becco è uno strumento per manipolare il cibo, esplorare e arrampicarsi.",
+  "Molte specie dedicano una parte importante della giornata alla ricerca e alla manipolazione del cibo.",
+  "Le penne non servono solo per volare: contribuiscono anche all'isolamento e alla comunicazione visiva.",
+  "La muta è un processo naturale di rinnovo del piumaggio e può avvenire in modo graduale.",
+  "Non tutti i pappagalli vivono nelle foreste: alcune specie abitano savane, zone aride e ambienti aperti.",
+  "Il lorichetto arcobaleno ha una lingua specializzata con una punta a spazzola, utile per raccogliere nettare e polline.",
+  "Il kakapo della Nuova Zelanda è un pappagallo notturno e incapace di volare.",
+  "Il kea vive nelle regioni montuose della Nuova Zelanda ed è noto per la sua curiosità.",
+  "Il cenerino è noto per le sue capacità cognitive, ma ogni individuo ha carattere e abilità propri.",
+  "Le vocalizzazioni possono avere funzioni diverse: contatto, allarme, coordinamento e interazione sociale.",
+  "I pappagalli hanno bisogno di opportunità di scelta e di attività: la sola presenza di giochi non basta se non vengono variati.",
+  "La dieta corretta cambia molto tra gruppi: i lorichetti, per esempio, hanno esigenze diverse da ara e amazzoni.",
+  "Gli alimenti ricchi di grassi non dovrebbero diventare la base della dieta: il piano alimentare va definito per la specie.",
+  "La conservazione dei pappagalli dipende anche dalla tutela degli habitat e dal contrasto al commercio illegale.",
+  "Una foto o un colore del piumaggio non bastano sempre per identificare una specie: età e sottospecie possono influire sull'aspetto."
 ];
 function setupCuriosita() {
   const button = $("#newCuriosity");
