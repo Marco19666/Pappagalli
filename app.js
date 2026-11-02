@@ -433,6 +433,142 @@ function renderQuiz() {
   });
 }
 
+function setupComparison() {
+  const first = $("#compareFirst");
+  const second = $("#compareSecond");
+  const output = $("#comparisonResult");
+  if (!first || !second || !output) return;
+
+  const fields = [
+    ["Categoria", "category"], ["Origine", "origin"], ["Dimensioni", "size"],
+    ["Peso", "weight"], ["Longevità", "lifespan"], ["Rumorosità", "noise"],
+    ["Socialità", "sociability"], ["Capacità vocale", "talking"],
+    ["Impegno", "commitment"], ["Esperienza", "experience"]
+  ];
+
+  function fillSelect(select) {
+    select.innerHTML = species.map(item =>
+      `<option value="${escapeHTML(item.id)}">${escapeHTML(item.common)}</option>`
+    ).join("");
+  }
+
+  function render() {
+    const a = species.find(item => item.id === first.value);
+    const b = species.find(item => item.id === second.value);
+    if (!a || !b) {
+      output.textContent = "Il catalogo è in caricamento.";
+      return;
+    }
+    output.innerHTML = `
+      <div class="comparison-head"><strong>${escapeHTML(a.common)}</strong><strong>${escapeHTML(b.common)}</strong></div>
+      ${fields.map(([label, key]) => `
+        <div class="comparison-row"><span>${label}</span><span>${escapeHTML(a[key] || "Dato non disponibile")}</span><span>${escapeHTML(b[key] || "Dato non disponibile")}</span></div>
+      `).join("")}
+    `;
+  }
+
+  const populate = () => {
+    if (!species.length || first.options.length) return;
+    fillSelect(first);
+    fillSelect(second);
+    if (species.length > 1) second.selectedIndex = 1;
+    render();
+  };
+  first.addEventListener("change", render);
+  second.addEventListener("change", render);
+  const originalLoad = loadSpecies;
+  // La funzione viene richiamata dopo il caricamento del catalogo.
+  populate();
+  if (!species.length) {
+    const grid = $("#speciesGrid");
+    const observer = new MutationObserver(() => {
+      if (species.length) { populate(); observer.disconnect(); }
+    });
+    observer.observe(grid, { childList: true, subtree: true });
+  }
+}
+
+const photoQuizState = { answer: null, score: 0, answered: false };
+
+async function setupPhotoQuiz() {
+  const imageBox = $("#photoQuizImage");
+  const optionsBox = $("#photoQuizOptions");
+  const result = $("#photoQuizResult");
+  const next = $("#nextPhotoQuestion");
+  if (!imageBox || !optionsBox || !result || !next) return;
+
+  async function loadQuestion() {
+    if (species.length < 4) {
+      imageBox.textContent = "Il catalogo non è ancora pronto.";
+      return;
+    }
+    photoQuizState.answered = false;
+    photoQuizState.answer = null;
+    result.textContent = "";
+    next.classList.add("hidden");
+    optionsBox.innerHTML = "";
+    imageBox.textContent = "Caricamento fotografia…";
+
+    const shuffled = [...species].sort(() => Math.random() - 0.5);
+    let target = null;
+    let imageUrl = "";
+    for (const candidate of shuffled.slice(0, 12)) {
+      try {
+        const url = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(candidate.scientific.replaceAll(" ", "_"))}`;
+        const response = await fetch(url);
+        if (!response.ok) continue;
+        const data = await response.json();
+        imageUrl = data.thumbnail?.source || data.originalimage?.source || "";
+        if (imageUrl) { target = candidate; break; }
+      } catch { /* Prova la specie successiva. */ }
+    }
+
+    if (!target) {
+      imageBox.textContent = "Per questa sfida non è stata trovata una fotografia. Riprova.";
+      next.classList.remove("hidden");
+      return;
+    }
+
+    photoQuizState.answer = target.id;
+    const img = document.createElement("img");
+    img.src = imageUrl;
+    img.alt = "Fotografia da identificare";
+    img.loading = "lazy";
+    imageBox.replaceChildren(img);
+
+    const choices = [target, ...shuffled.filter(item => item.id !== target.id).slice(0, 3)]
+      .sort(() => Math.random() - 0.5);
+    choices.forEach(item => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.textContent = item.common;
+      button.addEventListener("click", () => {
+        if (photoQuizState.answered) return;
+        photoQuizState.answered = true;
+        [...optionsBox.children].forEach(option => {
+          option.disabled = true;
+          if (option.dataset.id === target.id) option.classList.add("correct");
+          else if (option === button) option.classList.add("wrong");
+        });
+        const correct = item.id === target.id;
+        result.textContent = correct
+          ? `✓ Esatto! ${target.common} (${target.scientific}).`
+          : `La risposta corretta era ${target.common} (${target.scientific}).`;
+        next.classList.remove("hidden");
+      });
+      button.dataset.id = item.id;
+      optionsBox.appendChild(button);
+    });
+  }
+
+  next.addEventListener("click", loadQuestion);
+  const observer = new MutationObserver(() => {
+    if (species.length) { observer.disconnect(); loadQuestion(); }
+  });
+  observer.observe($("#speciesGrid"), { childList: true, subtree: true });
+  if (species.length) { observer.disconnect(); loadQuestion(); }
+}
+
 function setupJournal() {
   $("#entryDate").value = new Date().toISOString().slice(0, 10);
   renderJournal();
@@ -554,6 +690,8 @@ function init() {
   setupMenu();
   setupWeightCalculator();
   setupQuiz();
+  setupComparison();
+  setupPhotoQuiz();
   setupJournal();
   setupCuriosita();
   loadSpecies();
