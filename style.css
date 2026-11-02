@@ -418,3 +418,13 @@ body, button, input, select, textarea {
   .map-region-list { grid-template-columns: 1fr 1fr; max-height: none; }
 }
 @media (max-width: 420px) { .map-region-list { grid-template-columns: 1fr; } }
+
+
+/* Marcatori numerati e comandi della mappa */
+.map-reset-button { width: 100%; margin-top: 9px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 9px; background: #263f35; color: #fff; font: 600 11px "DM Sans", sans-serif; cursor: pointer; }
+.map-reset-button:hover { background: #38594a; }
+.map-count-marker { background: transparent; border: 0; }
+.map-count-marker span { display: grid; place-items: center; width: 38px; height: 38px; border: 3px solid #fff; border-radius: 50%; background: #294d3d; color: #fff; box-shadow: 0 2px 9px #172b2480; font: 800 12px "DM Sans", sans-serif; }
+.map-count-marker:hover span { transform: scale(1.12); }
+.map-species-link { padding: 2px 0; border: 0; background: transparent; color: #294d3d; text-align: left; font: inherit; cursor: pointer; }
+.map-species-link:hover { text-decoration: underline; }
