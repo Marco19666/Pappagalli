@@ -10,7 +10,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
   <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
   <script src="app.js" defer></script>
 </head>
 <body>
@@ -22,6 +24,7 @@
     <button class="menu-toggle" id="menuToggle" aria-label="Apri menu">☰</button>
     <nav id="mainNav">
       <a href="#esplora">Esplora</a>
+      <a href="#mappa">Mappa</a>
       <a href="#guide">Guide</a>
       <a href="#strumenti">Strumenti</a>
       <a href="#diario">Il mio diario</a>
@@ -62,6 +65,30 @@
       <div class="intro-grid">
         <h2>Intelligenza, carattere<br>e <em>straordinaria diversità.</em></h2>
         <p>I pappagalli appartengono all'ordine degli Psittaciformi. Sono uccelli dalle caratteristiche molto diverse: dimensioni, comportamento, vocalizzazioni e necessità cambiano notevolmente da una specie all'altra.</p>
+      </div>
+    </section>
+
+    <section class="world-map-section" id="mappa">
+      <div class="section-wrap">
+        <div class="section-heading">
+          <div>
+            <div class="section-kicker">DISTRIBUZIONE GEOGRAFICA</div>
+            <h2>I pappagalli <em>nel mondo.</em></h2>
+            <p class="muted">Esplora le aree d’origine delle specie del catalogo. Seleziona un punto per scoprire quali pappagalli sono associati a quella regione.</p>
+          </div>
+          <span class="catalog-label">ATLANTE INTERATTIVO ↗</span>
+        </div>
+        <div class="map-layout">
+          <div id="parrotWorldMap" class="world-map" role="application" aria-label="Mappa interattiva delle aree d’origine dei pappagalli">
+            <p class="map-loading">Caricamento della mappa…</p>
+          </div>
+          <aside class="map-sidebar">
+            <h3>Specie per area</h3>
+            <p class="map-help">Scegli una regione per centrare la mappa e vedere le specie elencate.</p>
+            <div id="mapRegionList" class="map-region-list"><p class="muted">Preparazione dei dati…</p></div>
+            <p class="map-disclaimer">Le posizioni sono indicative e rappresentano aree geografiche generali, non confini scientifici o località esatte. Alcune specie hanno distribuzioni più ampie o frammentate.</p>
+          </aside>
+        </div>
       </div>
     </section>
 
