@@ -57,6 +57,7 @@ async function loadSpecies() {
     $("#speciesCount").textContent = species.length;
     populateCategories();
     renderSpecies();
+    renderWorldMap();
   } catch (error) {
     grid.innerHTML = `
       <div class="loading-state">
@@ -680,6 +681,93 @@ function setupCuriosita() {
     text.textContent = curiosities[next];
   });
   text.textContent = curiosities[0];
+}
+
+
+const mapRegions = [
+  { id: "sud-america", name: "Sud America", lat: -8, lng: -60, test: /sud america|bacino amazzonico|bolivia|brasile|paraguay|ecuador|perù|nord-est del sud america|america settentrionale del sud america/i },
+  { id: "america-centrale", name: "America centrale e Messico", lat: 17, lng: -89, test: /america centrale|messico/i },
+  { id: "africa-occidentale", name: "Africa occidentale", lat: 7, lng: -5, test: /africa occidentale|africa centrale e occidentale|africa sud-occidentale/i },
+  { id: "africa-centrale", name: "Africa centrale", lat: 0, lng: 20, test: /africa centrale/i },
+  { id: "africa-orientale", name: "Africa orientale e meridionale", lat: -5, lng: 35, test: /africa orientale|tanzania|africa meridionale/i },
+  { id: "asia", name: "Asia meridionale e sud-orientale", lat: 20, lng: 95, test: /asia|himalaya|cina|indonesia/i },
+  { id: "madagascar", name: "Madagascar", lat: -19, lng: 47, test: /madagascar/i },
+  { id: "nuova-guinea", name: "Nuova Guinea e isole vicine", lat: -5, lng: 145, test: /nuova guinea/i },
+  { id: "australia", name: "Australia", lat: -25, lng: 134, test: /australia/i },
+  { id: "nuova-zelanda", name: "Nuova Zelanda", lat: -42, lng: 173, test: /nuova zelanda/i }
+];
+let worldMap = null;
+let worldMapMarkers = {};
+
+function regionForOrigin(origin = "") {
+  const normalized = origin.toLocaleLowerCase("it");
+  // Le aree oceaniche specifiche hanno precedenza sulle etichette più generiche.
+  if (/nuova zelanda/.test(normalized)) return mapRegions.find(r => r.id === "nuova-zelanda");
+  if (/madagascar/.test(normalized)) return mapRegions.find(r => r.id === "madagascar");
+  if (/nuova guinea/.test(normalized)) return mapRegions.find(r => r.id === "nuova-guinea");
+  if (/australia/.test(normalized)) return mapRegions.find(r => r.id === "australia");
+  if (/america centrale|messico/.test(normalized)) return mapRegions.find(r => r.id === "america-centrale");
+  if (/sud america|bacino amazzonico|bolivia|brasile|paraguay|ecuador|perù|nord-est del sud america/.test(normalized)) return mapRegions.find(r => r.id === "sud-america");
+  if (/africa orientale|tanzania|africa meridionale/.test(normalized)) return mapRegions.find(r => r.id === "africa-orientale");
+  if (/africa occidentale|africa sud-occidentale/.test(normalized)) return mapRegions.find(r => r.id === "africa-occidentale");
+  if (/africa centrale/.test(normalized)) return mapRegions.find(r => r.id === "africa-centrale");
+  if (/asia|himalaya|cina|indonesia/.test(normalized)) return mapRegions.find(r => r.id === "asia");
+  return null;
+}
+
+function renderWorldMap() {
+  const mapElement = $("#parrotWorldMap");
+  const listElement = $("#mapRegionList");
+  if (!mapElement || !listElement || !species.length) return;
+
+  const grouped = new Map();
+  species.forEach(item => {
+    const region = regionForOrigin(item.origin);
+    if (!region) return;
+    if (!grouped.has(region.id)) grouped.set(region.id, { region, species: [] });
+    grouped.get(region.id).species.push(item);
+  });
+
+  listElement.innerHTML = [...grouped.values()].sort((a,b) => a.region.name.localeCompare(b.region.name, "it")).map(group => `
+    <button type="button" class="map-region-button" data-map-region="${group.region.id}">
+      <span>${escapeHTML(group.region.name)}</span><strong>${group.species.length}</strong>
+    </button>`).join("");
+
+  if (!window.L) {
+    mapElement.innerHTML = '<p class="map-loading">La mappa non è disponibile in questo momento. Controlla la connessione e ricarica la pagina.</p>';
+    return;
+  }
+
+  if (!worldMap) {
+    mapElement.innerHTML = "";
+    worldMap = L.map(mapElement, { scrollWheelZoom: false, minZoom: 2 }).setView([8, 8], 2);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>',
+      maxZoom: 8
+    }).addTo(worldMap);
+    worldMap.on("focus", () => worldMap.scrollWheelZoom.enable());
+    worldMap.on("blur", () => worldMap.scrollWheelZoom.disable());
+  }
+
+  Object.values(worldMapMarkers).forEach(marker => worldMap.removeLayer(marker));
+  worldMapMarkers = {};
+  grouped.forEach(({region, species: entries}, id) => {
+    const names = entries.map(item => `<li>${escapeHTML(item.common)} <em>(${escapeHTML(item.scientific)})</em></li>`).join("");
+    const popup = `<div class="map-popup"><strong>${escapeHTML(region.name)}</strong><p>${entries.length} ${entries.length === 1 ? "specie" : "specie"} nel catalogo</p><ul>${names}</ul></div>`;
+    worldMapMarkers[id] = L.marker([region.lat, region.lng]).addTo(worldMap).bindPopup(popup);
+  });
+
+  listElement.querySelectorAll("[data-map-region]").forEach(button => {
+    button.addEventListener("click", () => {
+      const marker = worldMapMarkers[button.dataset.mapRegion];
+      if (!marker) return;
+      worldMap.flyTo(marker.getLatLng(), 4, { duration: 0.8 });
+      marker.openPopup();
+      listElement.querySelectorAll(".map-region-button").forEach(item => item.classList.toggle("active", item === button));
+    });
+  });
+
+  setTimeout(() => worldMap.invalidateSize(), 100);
 }
 
 function init() {
