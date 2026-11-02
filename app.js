@@ -752,10 +752,30 @@ function renderWorldMap() {
   Object.values(worldMapMarkers).forEach(marker => worldMap.removeLayer(marker));
   worldMapMarkers = {};
   grouped.forEach(({region, species: entries}, id) => {
-    const names = entries.map(item => `<li>${escapeHTML(item.common)} <em>(${escapeHTML(item.scientific)})</em></li>`).join("");
+    const names = entries.map(item => `<li><button type="button" class="map-species-link" data-map-species="${escapeHTML(item.id)}">${escapeHTML(item.common)} <em>(${escapeHTML(item.scientific)})</em></button></li>`).join("");
     const popup = `<div class="map-popup"><strong>${escapeHTML(region.name)}</strong><p>${entries.length} ${entries.length === 1 ? "specie" : "specie"} nel catalogo</p><ul>${names}</ul></div>`;
-    worldMapMarkers[id] = L.marker([region.lat, region.lng]).addTo(worldMap).bindPopup(popup);
+    const countIcon = L.divIcon({
+      className: "map-count-marker",
+      html: `<span>${entries.length}</span>`,
+      iconSize: [38, 38],
+      iconAnchor: [19, 19]
+    });
+    worldMapMarkers[id] = L.marker([region.lat, region.lng], { icon: countIcon }).addTo(worldMap).bindPopup(popup);
   });
+
+  mapElement.addEventListener("click", event => {
+    const speciesButton = event.target.closest("[data-map-species]");
+    if (speciesButton) openSpecies(speciesButton.dataset.mapSpecies);
+  });
+
+  const showWorldButton = $("#mapShowWorld");
+  if (showWorldButton) {
+    showWorldButton.addEventListener("click", () => {
+      worldMap.flyTo([8, 8], 2, { duration: 0.8 });
+      listElement.querySelectorAll(".map-region-button").forEach(item => item.classList.remove("active"));
+      worldMap.closePopup();
+    });
+  }
 
   listElement.querySelectorAll("[data-map-region]").forEach(button => {
     button.addEventListener("click", () => {
