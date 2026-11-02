@@ -246,3 +246,76 @@ body { color: #17251e; }
   border-color: #cbd6ca;
 }
 
+
+
+/* ACCESSIBILITA': contrasto elevato e caratteri più marcati nelle schede */
+body, button, input, select, textarea {
+  font-weight: 600;
+}
+.species-card {
+  background: #ffffff;
+  border: 1px solid #b8c8b8;
+}
+.species-card h3 {
+  color: #14291f;
+  font-weight: 800;
+}
+.species-category {
+  color: #244f35;
+  font-weight: 800;
+}
+.scientific-name {
+  color: #344b3a !important;
+  font-weight: 700;
+}
+.species-tags span {
+  background: #e8eee5;
+  color: #263e2d;
+  font-weight: 700;
+  font-size: 10px;
+}
+.card-bottom span {
+  color: #34483a !important;
+  font-weight: 700;
+}
+.card-bottom button, .favorite-button {
+  font-weight: 800;
+}
+.species-card-body, .species-card-body p {
+  color: #1d2b22;
+}
+.results-bar, .results-bar span, .empty-state p {
+  color: #26392d;
+  font-weight: 700;
+}
+.search-panel, .tool-card, .journal-form, .guide-card, .guide-details article,
+.detail-meta div, .journal-entry, .curiosity-card {
+  background-color: #ffffff;
+}
+.detail-meta span {
+  color: #263d2d !important;
+  font-weight: 700;
+}
+.detail-meta strong, .detail-text {
+  color: #17271d !important;
+  font-weight: 700;
+}
+.guide-card p, .tool-card > p, .journal-entry p, .privacy-note,
+.warning-note p, .guide-details p {
+  color: #263b2d !important;
+  font-weight: 600;
+}
+.filter-row label, .journal-form label, .tool-inputs label {
+  color: #20382a !important;
+  font-weight: 800;
+}
+.filter-row select, .journal-form input, .journal-form textarea,
+.tool-inputs input, .search-box input {
+  color: #17271d;
+  font-weight: 600;
+}
+@media (max-width: 650px) {
+  .species-card h3 { font-size: 15px; font-weight: 800; }
+  .scientific-name { font-size: 11px; }
+  .species-tags span { font-size: 9px; }
+}
