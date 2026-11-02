@@ -476,7 +476,6 @@ function setupComparison() {
   };
   first.addEventListener("change", render);
   second.addEventListener("change", render);
-  const originalLoad = loadSpecies;
   // La funzione viene richiamata dopo il caricamento del catalogo.
   populate();
   if (!species.length) {
