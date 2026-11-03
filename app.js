@@ -792,6 +792,8 @@ function renderWorldMap() {
 
 
 const PACO_WORKER_URL = "https://paco-ai.chiccovision.workers.dev/";
+const PACO_VISIT_LIMIT = 3;
+const PACO_SESSION_KEY = "parrotworld_paco_questions_v1";
 
 function setupPaco() {
   const launcher = $("#pacoLauncher");
@@ -802,6 +804,9 @@ function setupPaco() {
   const messages = $("#pacoMessages");
   const send = $("#pacoSend");
   if (!launcher || !panel || !form) return;
+
+  let questionsUsed = Number(sessionStorage.getItem(PACO_SESSION_KEY) || 0);
+  if (!Number.isFinite(questionsUsed) || questionsUsed < 0) questionsUsed = 0;
 
   function setOpen(open) {
     panel.hidden = !open;
@@ -818,6 +823,10 @@ function setupPaco() {
     return bubble;
   }
 
+  function showVisitLimit() {
+    addMessage("Squawk! Per questa visita abbiamo già fatto tre belle chiacchierate. Torna a trovarmi in una nuova visita per altre domande! 🦜", "paco-message-bot");
+  }
+
   launcher.addEventListener("click", () => setOpen(panel.hidden));
   close.addEventListener("click", () => setOpen(false));
 
@@ -826,11 +835,18 @@ function setupPaco() {
     const question = input.value.trim();
     if (!question || send.disabled) return;
 
+    if (questionsUsed >= PACO_VISIT_LIMIT) {
+      input.value = "";
+      showVisitLimit();
+      return;
+    }
+
     addMessage(question, "paco-message-user");
     input.value = "";
     send.disabled = true;
     input.disabled = true;
     const waiting = addMessage("Paco sta pensando…", "paco-message-status");
+    let answered = false;
 
     try {
       const response = await fetch(PACO_WORKER_URL, {
@@ -844,6 +860,9 @@ function setupPaco() {
         throw new Error(data.details || data.error || "Il servizio non è disponibile.");
       }
       addMessage(data.answer || "Squawk! Non ho ricevuto una risposta. Riprova!", "paco-message-bot");
+      questionsUsed += 1;
+      sessionStorage.setItem(PACO_SESSION_KEY, String(questionsUsed));
+      answered = true;
     } catch (error) {
       waiting.remove();
       addMessage("Ops! In questo momento non riesco a rispondere. Riprova tra poco. (" + error.message + ")", "paco-message-bot");
