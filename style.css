@@ -594,3 +594,28 @@ body, button, input, select, textarea {
   .language-picker { margin-left: auto; }
   .site-header .paco-launcher.header-cta { transform: translateY(4px); }
 }
+
+
+/* Il selettore è l'ultima voce del menu principale, allineata a destra. */
+.site-header nav .language-picker {
+  margin-left: auto;
+  padding-left: 8px;
+}
+.site-header nav .language-picker select {
+  max-width: 118px;
+}
+@media (max-width: 900px) and (min-width: 651px) {
+  .site-header nav .language-picker { padding-left: 2px; }
+  .site-header nav .language-picker select { max-width: 88px; }
+}
+@media (max-width: 650px) {
+  .site-header nav .language-picker {
+    display: flex;
+    width: 100%;
+    justify-content: flex-end;
+    margin: 8px 0 0;
+    padding: 10px 0 0;
+    border-top: 1px solid #d2dbd0;
+  }
+  .site-header nav .language-picker select { max-width: 120px; }
+}
