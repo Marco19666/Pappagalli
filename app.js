@@ -1159,19 +1159,49 @@ function init() {
 
 document.addEventListener("DOMContentLoaded", init);
 
-// Il pulsante offre istruzioni per l'installazione dal browser.
-// Non registra service worker e non modifica l'avvio dell'applicazione.
-function setupInstallAppHelp() {
+// Installazione PWA: usa il prompt nativo quando il browser lo rende disponibile.
+let deferredInstallPrompt = null;
+
+function setupInstallApp() {
   const button = $("#installAppButton");
   if (!button) return;
-  button.addEventListener("click", () => {
+
+  const isStandalone = window.matchMedia("(display-mode: standalone)").matches ||
+    window.navigator.standalone === true;
+  if (isStandalone) {
+    button.hidden = true;
+    return;
+  }
+
+  window.addEventListener("beforeinstallprompt", event => {
+    event.preventDefault();
+    deferredInstallPrompt = event;
+    button.setAttribute("aria-label", "Installa ParrotWorld");
+  });
+
+  window.addEventListener("appinstalled", () => {
+    deferredInstallPrompt = null;
+    button.hidden = true;
+  });
+
+  button.addEventListener("click", async () => {
+    if (deferredInstallPrompt) {
+      const promptEvent = deferredInstallPrompt;
+      deferredInstallPrompt = null;
+      await promptEvent.prompt();
+      const choice = await promptEvent.userChoice;
+      if (choice?.outcome === "accepted") button.hidden = true;
+      return;
+    }
+
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
       (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-    const instructions = isIOS
-      ? "Per aggiungere ParrotWorld alla schermata Home: apri il menu Condividi del browser e scegli “Aggiungi alla schermata Home”."
-      : "Per aggiungere ParrotWorld alla schermata Home: apri il menu del browser (⋮) e scegli “Installa app” oppure “Aggiungi a schermata Home”, se disponibile.";
-    window.alert(instructions);
+    if (isIOS) {
+      window.alert("Per installare ParrotWorld su iPhone/iPad, apri Condividi in Safari e scegli “Aggiungi alla schermata Home”.");
+    } else {
+      window.alert("L'installazione diretta non è disponibile in questo momento. Verifica di usare Chrome o un browser compatibile e riprova tra qualche istante.");
+    }
   });
 }
-document.addEventListener("DOMContentLoaded", setupInstallAppHelp);
+document.addEventListener("DOMContentLoaded", setupInstallApp);
 
