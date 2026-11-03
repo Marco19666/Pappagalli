@@ -303,8 +303,8 @@ function setupLanguageSelector() {
   selector.addEventListener("change", () => {
     currentLanguage = SUPPORTED_LANGUAGES.includes(selector.value) ? selector.value : "it";
     localStorage.setItem(STORAGE_KEYS.language, currentLanguage);
+    closeViewsAndReturnHome();
     applyLanguageToPage();
-    if (currentSpeciesId) openSpecies(currentSpeciesId);
   });
 }
 
@@ -915,6 +915,9 @@ function setupPaco() {
 const translationOriginals = new WeakMap();
 const translatedNodes = new WeakSet();
 const translationCache = new Map();
+const savedTranslationCache = loadStorage("parrotworld_translations_v1", {});
+const TRANSLATION_BATCH_SIZE = 18;
+const TRANSLATION_SEPARATOR = "⟦PW_TRANSLATION_SPLIT_9F31⟧";
 let translationObserver = null;
 let translationQueue = Promise.resolve();
 const attributeOriginals = new WeakMap();
@@ -931,10 +934,9 @@ async function translateText(value, language) {
   if (language === "it" || !value.trim()) return value;
   const key = language + "::" + value;
   if (translationCache.has(key)) return translationCache.get(key);
-  const stored = loadStorage("parrotworld_translations_v1", {});
-  if (stored[key]) {
-    translationCache.set(key, stored[key]);
-    return stored[key];
+  if (savedTranslationCache[key]) {
+    translationCache.set(key, savedTranslationCache[key]);
+    return savedTranslationCache[key];
   }
   const endpoint = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=it&tl=" +
     encodeURIComponent(language) + "&dt=t&q=" + encodeURIComponent(value);
@@ -945,8 +947,8 @@ async function translateText(value, language) {
     ? data[0].map(part => part?.[0] || "").join("")
     : value;
   translationCache.set(key, translated);
-  stored[key] = translated;
-  try { saveStorage("parrotworld_translations_v1", stored); } catch {}
+  savedTranslationCache[key] = translated;
+  try { saveStorage("parrotworld_translations_v1", savedTranslationCache); } catch {}
   return translated;
 }
 
@@ -986,6 +988,68 @@ function collectTextNodes(root) {
   return nodes;
 }
 
+async function translateTextNodesBatch(nodes, language) {
+  const pending = [];
+  nodes.forEach(node => {
+    if (!node?.isConnected) return;
+    if (!translationOriginals.has(node)) translationOriginals.set(node, node.nodeValue);
+    const original = translationOriginals.get(node);
+    if (!isTranslatableText(original)) return;
+    const key = language + "::" + original;
+    const cached = translationCache.get(key) || savedTranslationCache[key];
+    if (cached) {
+      translationCache.set(key, cached);
+      node.nodeValue = cached;
+    } else {
+      pending.push({ node, original, key });
+    }
+  });
+  if (!pending.length || currentLanguage !== language) return;
+  const joined = pending.map(item => item.original).join(TRANSLATION_SEPARATOR);
+  try {
+    const endpoint = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=it&tl=" +
+      encodeURIComponent(language) + "&dt=t&q=" + encodeURIComponent(joined);
+    const response = await fetch(endpoint);
+    if (!response.ok) throw new Error("Traduzione non disponibile");
+    const data = await response.json();
+    const translated = Array.isArray(data?.[0]) ? data[0].map(part => part?.[0] || "").join("") : "";
+    const parts = translated.split(TRANSLATION_SEPARATOR);
+    if (parts.length !== pending.length) throw new Error("Risposta di traduzione non suddivisibile");
+    if (currentLanguage !== language) return;
+    pending.forEach((item, index) => {
+      const value = parts[index] || item.original;
+      translationCache.set(item.key, value);
+      savedTranslationCache[item.key] = value;
+      if (item.node.isConnected && currentLanguage === language) item.node.nodeValue = value;
+    });
+    try { saveStorage("parrotworld_translations_v1", savedTranslationCache); } catch {}
+  } catch {
+    // Ripiego: traduce singolarmente i soli testi non presenti nella cache.
+    await Promise.all(pending.map(item => translateTextNode(item.node, language)));
+  }
+}
+
+function closeViewsAndReturnHome() {
+  document.querySelectorAll("dialog[open]").forEach(dialog => {
+    if (typeof dialog.close === "function") dialog.close();
+    else dialog.removeAttribute("open");
+  });
+  const pacoPanel = $("#pacoPanel");
+  if (pacoPanel) pacoPanel.hidden = true;
+  const pacoLauncher = $("#pacoLauncher");
+  if (pacoLauncher) pacoLauncher.setAttribute("aria-expanded", "false");
+  const nav = $("#mainNav");
+  if (nav) nav.classList.remove("open");
+  const menuToggle = $("#menuToggle");
+  if (menuToggle) {
+    menuToggle.setAttribute("aria-expanded", "false");
+    menuToggle.setAttribute("aria-label", "Apri menu");
+  }
+  currentSpeciesId = null;
+  if (location.hash !== "#home") history.replaceState(null, "", "#home");
+  $("#home")?.scrollIntoView({ behavior: "auto", block: "start" });
+}
+
 function applyLanguageToPage() {
   const language = currentLanguage;
   translatePageAttributes(language);
@@ -998,10 +1062,9 @@ function applyLanguageToPage() {
   }
   const nodes = collectTextNodes(document.body);
   translationQueue = translationQueue.then(async () => {
-    const batchSize = 6;
-    for (let i = 0; i < nodes.length; i += batchSize) {
+    for (let i = 0; i < nodes.length; i += TRANSLATION_BATCH_SIZE) {
       if (currentLanguage !== language) return;
-      await Promise.all(nodes.slice(i, i + batchSize).map(node => translateTextNode(node, language)));
+      await translateTextNodesBatch(nodes.slice(i, i + TRANSLATION_BATCH_SIZE), language);
     }
   });
   document.documentElement.lang = language;
@@ -1044,9 +1107,9 @@ function observeDynamicTranslations() {
     if (!added.length) return;
     const language = currentLanguage;
     translationQueue = translationQueue.then(async () => {
-      for (let i = 0; i < added.length; i += 6) {
+      for (let i = 0; i < added.length; i += TRANSLATION_BATCH_SIZE) {
         if (currentLanguage !== language) return;
-        await Promise.all(added.slice(i, i + 6).map(node => translateTextNode(node, language)));
+        await translateTextNodesBatch(added.slice(i, i + TRANSLATION_BATCH_SIZE), language);
       }
     });
   });
