@@ -457,3 +457,45 @@ body, button, input, select, textarea {
 .paco-footnote { margin:0; padding:0 12px 10px; background:white; color:#68756e; font-size:10px; text-align:center; }
 .paco-sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
 @media (max-width:480px) { .paco-widget { right:12px; bottom:12px; } .paco-panel { bottom:60px; height:min(520px, calc(100dvh - 90px)); } }
+
+
+/* Navigazione aggiornata: Paco in evidenza nell'intestazione */
+.site-header .paco-launcher.header-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 13px 7px 8px;
+  border: 0;
+  border-radius: 28px;
+  background: var(--green);
+  color: #fff;
+  box-shadow: 0 4px 14px #102f2820;
+}
+.site-header .paco-launcher .paco-launcher-avatar {
+  width: 30px;
+  height: 30px;
+  font-size: 19px;
+}
+.site-header .paco-launcher .paco-launcher-label { font-size: 12px; }
+.site-header .paco-launcher .paco-launcher-dot { width: 7px; height: 7px; }
+.paco-widget { position: static; }
+.paco-panel {
+  position: fixed;
+  top: 88px;
+  right: 22px;
+  bottom: auto;
+  z-index: 1001;
+}
+@media (max-width: 900px) and (min-width: 651px) {
+  .site-header .paco-launcher.header-cta { gap: 6px; padding: 6px 9px 6px 6px; }
+  .site-header .paco-launcher .paco-launcher-label { font-size: 10px; }
+  .site-header .paco-launcher .paco-launcher-avatar { width: 27px; height: 27px; font-size: 17px; }
+}
+@media (max-width: 650px) {
+  .site-header { gap: 7px; }
+  .site-header .paco-launcher.header-cta { margin: 0 5px 0 auto; padding: 5px 9px 5px 6px; }
+  .site-header .paco-launcher .paco-launcher-label { font-size: 10px; }
+  .site-header .paco-launcher .paco-launcher-avatar { width: 27px; height: 27px; font-size: 17px; }
+  .menu-toggle { order: 3; }
+  .paco-panel { top: 74px; right: 10px; width: min(360px, calc(100vw - 20px)); }
+}
