@@ -620,17 +620,4 @@ body, button, input, select, textarea {
   .site-header nav .language-picker select { max-width: 120px; }
 }
 
-/* Pulsante Installa app: stesso colore dei pulsanti principali della hero */
-.button-install {
-  background: var(--lime);
-  color: var(--green-dark);
-  border: 0;
-}
-.button-install:hover, .button-install.install-app-ready {
-  background: var(--lime);
-  color: var(--green-dark);
-}
-.button-install[hidden] { display: none !important; }
-@media (max-width: 650px) {
-  .hero-actions { flex-wrap: wrap; gap: 12px; }
-}
+
