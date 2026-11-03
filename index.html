@@ -304,5 +304,30 @@
     <button class="dialog-close" id="dialogClose" aria-label="Chiudi">×</button>
     <div id="speciesDetail"></div>
   </dialog>
+
+  <section class="paco-widget" aria-label="Chatta con Paco">
+    <button class="paco-launcher" id="pacoLauncher" type="button" aria-expanded="false" aria-controls="pacoPanel">
+      <span class="paco-launcher-avatar" aria-hidden="true">🦜</span>
+      <span class="paco-launcher-label">Chiedi a Paco</span>
+      <span class="paco-launcher-dot" aria-hidden="true"></span>
+    </button>
+    <section class="paco-panel" id="pacoPanel" aria-label="Chat con Paco" hidden>
+      <header class="paco-header">
+        <div class="paco-avatar" aria-hidden="true">🦜</div>
+        <div class="paco-heading"><strong>Paco</strong><span>La mascotte di ParrotWorld</span></div>
+        <button class="paco-close" id="pacoClose" type="button" aria-label="Chiudi chat">×</button>
+      </header>
+      <div class="paco-messages" id="pacoMessages" aria-live="polite">
+        <div class="paco-message paco-message-bot">Squawk! Ciao! Sono Paco. 🦜 Chiedimi tutto sui pappagalli!</div>
+      </div>
+      <form class="paco-form" id="pacoForm">
+        <label class="paco-sr-only" for="pacoInput">Scrivi una domanda sui pappagalli</label>
+        <input id="pacoInput" type="text" maxlength="1000" placeholder="Scrivi una domanda..." autocomplete="off" required>
+        <button id="pacoSend" type="submit" aria-label="Invia messaggio">➤</button>
+      </form>
+      <p class="paco-footnote">Paco risponde a domande sui pappagalli. Le risposte AI possono contenere imprecisioni.</p>
+    </section>
+  </section>
+
 </body>
 </html>
