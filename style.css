@@ -556,3 +556,10 @@ body, button, input, select, textarea {
 .guide-card.guide-feature p { color: #f1f6f1 !important; }
 .guide-card a,
 .guide-card.guide-feature a { color: #e2f4a7 !important; }
+
+
+/* Selettore della lingua nell’intestazione */
+.language-picker { display:inline-flex; align-items:center; gap:6px; flex:0 0 auto; color:#34463c; font-size:11px; font-weight:800; white-space:nowrap; }
+.language-picker select { max-width:118px; padding:8px 9px; border:1px solid #d2dbd0; border-radius:20px; background:#fffefa; color:#173f35; font:700 11px "DM Sans",sans-serif; cursor:pointer; }
+@media (max-width:900px) and (min-width:651px) { .language-picker-label { display:none; } .language-picker select { max-width:92px; padding:7px 6px; font-size:10px; } }
+@media (max-width:650px) { .language-picker-label { display:none; } .language-picker select { max-width:75px; padding:6px 5px; font-size:9px; } }
