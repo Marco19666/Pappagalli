@@ -1,0 +1,19 @@
+{
+  "name": "ParrotWorld",
+  "short_name": "ParrotWorld",
+  "description": "Il mondo dei pappagalli: specie, benessere e curiosità.",
+  "lang": "it",
+  "start_url": "./#home",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#fffefa",
+  "theme_color": "#173f35",
+  "icons": [
+    {
+      "src": "./icons/parrotworld.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
