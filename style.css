@@ -499,3 +499,44 @@ body, button, input, select, textarea {
   .menu-toggle { order: 3; }
   .paco-panel { top: 74px; right: 10px; width: min(360px, calc(100vw - 20px)); }
 }
+
+
+/* Rifinitura visiva: gerarchia coerente tra le sezioni */
+.button-outline-light {
+  color: #f4f7f1;
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(232,241,232,.48);
+}
+.button-outline-light:hover { background: rgba(255,255,255,.15); }
+.hero-actions { flex-wrap: wrap; gap: 12px; }
+.hero-actions .button { min-height: 46px; }
+/* Il secondo elemento fluttuante è stato rimosso dalla landing. */
+.section-heading { align-items: center; }
+.explore-section, .world-map-section, .care-section, .tools-section, .journal-section {
+  scroll-margin-top: 88px;
+}
+.world-map-section { background: #f1f4ee; }
+.care-section { background: #fffefa; }
+.guide-card, .tool-card, .map-sidebar, .guide-details article, .journal-form {
+  border-radius: 18px;
+  box-shadow: 0 10px 32px rgba(21,48,39,.055);
+}
+.guide-card, .tool-card { transition: transform .22s ease, box-shadow .22s ease; }
+.guide-card:hover, .tool-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 38px rgba(21,48,39,.09);
+}
+.guide-card { padding: 25px 22px; }
+.guide-card h3, .tool-card h3 { letter-spacing: -.35px; }
+.tools-section { background: #f1f4ee; }
+.tool-card { padding: 29px; }
+.curiosity-section { background: #eaf0e5; }
+.curiosity-card { border: 1px solid rgba(23,63,53,.08); }
+.journal-section { background: #fffefa; }
+.journal-form { border: 1px solid var(--line); background: #f8f9f5; padding: 28px; }
+.closing-section { position: relative; overflow: hidden; }
+.closing-content .section-kicker { color: #d5e2d5; }
+@media (prefers-reduced-motion: reduce) {
+  .guide-card, .tool-card, .button { transition: none; }
+  .guide-card:hover, .tool-card:hover, .button:hover { transform: none; }
+}
