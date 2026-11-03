@@ -298,38 +298,6 @@ function wikipediaArticleUrl(item) {
 
 let deferredInstallPrompt = null;
 
-function setupInstallApp() {
-  const button = $("#installAppButton");
-  if (!button) return;
-  const isStandalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
-  if (isStandalone) { button.hidden = true; return; }
-  window.addEventListener("beforeinstallprompt", event => {
-    event.preventDefault();
-    deferredInstallPrompt = event;
-    button.classList.add("install-app-ready");
-  });
-  window.addEventListener("appinstalled", () => { deferredInstallPrompt = null; button.hidden = true; });
-  button.addEventListener("click", async () => {
-    if (deferredInstallPrompt) {
-      deferredInstallPrompt.prompt();
-      await deferredInstallPrompt.userChoice;
-      deferredInstallPrompt = null;
-      button.classList.remove("install-app-ready");
-      return;
-    }
-    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-    const message = isIOS
-      ? "Per installare ParrotWorld: tocca Condividi nel browser, poi «Aggiungi alla schermata Home».":
-      : "Per installare ParrotWorld, apri il menu del browser e scegli «Installa app» oppure «Aggiungi a schermata Home». Se l’opzione non compare, usa un browser compatibile e verifica che il sito sia raggiunto tramite HTTPS.";
-    window.alert(message);
-  });
-  if ("serviceWorker" in navigator && location.protocol === "https:") {
-    window.addEventListener("load", () => {
-      navigator.serviceWorker.register("./service-worker.js").catch(error => console.warn("Registrazione modalità app non riuscita:", error));
-    }, { once: true });
-  }
-}
-
 function setupLanguageSelector() {
   const selector = $("#languageSelect");
   if (!selector) return;
@@ -1156,28 +1124,36 @@ function observeDynamicTranslations() {
   translationObserver.observe(document.body, { childList: true, subtree: true });
 }
 
-function init() {
-  $("#currentYear").textContent = new Date().getFullYear();
-
-  // Carica subito il catalogo: un eventuale errore in un componente secondario
-  // non deve lasciare l'atlante bloccato sul messaggio di caricamento.
-  loadSpecies().catch(error => {
-    const grid = $("#speciesGrid");
-    if (grid) grid.innerHTML = '<div class="loading-state"><strong>Non riesco a caricare il catalogo.</strong><p>Ricarica la pagina tra poco.</p></div>';
-    console.error("Caricamento atlante non riuscito:", error);
-  });
-
-  const initializers = [
-    setupLanguageSelector, setupInstallApp, observeDynamicTranslations,
-    setupFilters, setupDialog, setupMenu, setupWeightCalculator, setupQuiz,
-    setupComparison, setupPhotoQuiz, setupJournal, setupCuriosita, setupPaco
-  ];
-  initializers.forEach(setup => {
-    try { setup(); }
-    catch (error) { console.error("Inizializzazione componente non riuscita:", setup.name, error); }
-  });
-
-  applyLanguageToPage();
+function disableOldPwaCache() {
+  // Rimuove il vecchio service worker introdotto con la funzione Installa app.
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.getRegistrations()
+      .then(registrations => Promise.all(registrations.map(registration => registration.unregister())))
+      .catch(error => console.warn("Pulizia service worker non riuscita:", error));
+  }
+  if ("caches" in window) {
+    caches.keys()
+      .then(keys => Promise.all(keys.filter(key => key.startsWith("parrotworld-shell-")).map(key => caches.delete(key))))
+      .catch(error => console.warn("Pulizia cache app non riuscita:", error));
+  }
 }
 
+function init() {
+  $("#currentYear").textContent = new Date().getFullYear();
+  disableOldPwaCache();
+  setupLanguageSelector();
+  observeDynamicTranslations();
+  setupFilters();
+  setupDialog();
+  setupMenu();
+  setupWeightCalculator();
+  setupQuiz();
+  setupComparison();
+  setupPhotoQuiz();
+  setupJournal();
+  setupCuriosita();
+  setupPaco();
+  loadSpecies();
+  applyLanguageToPage();
+}
 document.addEventListener("DOMContentLoaded", init);
