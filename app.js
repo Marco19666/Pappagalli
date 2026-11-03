@@ -1018,12 +1018,12 @@ function translatePageAttributes(language) {
       if (!(name in originals)) originals[name] = element.getAttribute(name);
       const original = originals[name];
       if (language === "it") {
-        element.setAttribute(name, original);
+        if (element.getAttribute(name) !== original) element.setAttribute(name, original);
         return;
       }
       try {
         const translated = await translateText(original, language);
-        if (currentLanguage === language && element.isConnected) element.setAttribute(name, translated);
+        if (currentLanguage === language && element.isConnected && element.getAttribute(name) !== translated) element.setAttribute(name, translated);
       } catch {}
     });
   });
