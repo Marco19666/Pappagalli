@@ -621,10 +621,3 @@ body, button, input, select, textarea {
 }
 
 
-
-/* Mantiene il pulsante Installa app alla stessa altezza degli altri due. */
-.hero-actions > .button {
-  height: 46px;
-  min-height: 46px;
-  white-space: nowrap;
-}
