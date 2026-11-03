@@ -1156,4 +1156,22 @@ function init() {
   loadSpecies();
   applyLanguageToPage();
 }
+
 document.addEventListener("DOMContentLoaded", init);
+
+// Il pulsante offre istruzioni per l'installazione dal browser.
+// Non registra service worker e non modifica l'avvio dell'applicazione.
+function setupInstallAppHelp() {
+  const button = $("#installAppButton");
+  if (!button) return;
+  button.addEventListener("click", () => {
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    const instructions = isIOS
+      ? "Per aggiungere ParrotWorld alla schermata Home: apri il menu Condividi del browser e scegli “Aggiungi alla schermata Home”."
+      : "Per aggiungere ParrotWorld alla schermata Home: apri il menu del browser (⋮) e scegli “Installa app” oppure “Aggiungi a schermata Home”, se disponibile.";
+    window.alert(instructions);
+  });
+}
+document.addEventListener("DOMContentLoaded", setupInstallAppHelp);
+
