@@ -540,3 +540,19 @@ body, button, input, select, textarea {
   .guide-card, .tool-card, .button { transition: none; }
   .guide-card:hover, .tool-card:hover, .button:hover { transform: none; }
 }
+
+/* Uniforma le quattro schede della guida al colore della scheda Alimentazione. */
+.guide-card,
+.guide-card.guide-feature {
+  background: #173f35 !important;
+  color: #ffffff !important;
+  border-color: #173f35 !important;
+}
+.guide-card .guide-number,
+.guide-card.guide-feature .guide-number { color: #e2eddf !important; }
+.guide-card h3,
+.guide-card.guide-feature h3 { color: #ffffff !important; }
+.guide-card p,
+.guide-card.guide-feature p { color: #f1f6f1 !important; }
+.guide-card a,
+.guide-card.guide-feature a { color: #e2f4a7 !important; }
