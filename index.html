@@ -30,7 +30,7 @@
       <a href="#diario">Il mio diario</a>
       <a href="#info">Progetto</a>
     </nav>
-    <a class="header-cta" href="#esplora">Scopri le specie <span>↗</span></a>
+    <button class="paco-launcher header-cta" id="pacoLauncher" type="button" aria-expanded="false" aria-controls="pacoPanel"><span class="paco-launcher-avatar" aria-hidden="true">🦜</span><span class="paco-launcher-label">Chiedi a Paco</span><span class="paco-launcher-dot" aria-hidden="true"></span></button>
   </header>
 
   <main>
@@ -65,31 +65,6 @@
       <div class="intro-grid">
         <h2>Intelligenza, carattere<br>e <em>straordinaria diversità.</em></h2>
         <p>I pappagalli appartengono all'ordine degli Psittaciformi. Sono uccelli dalle caratteristiche molto diverse: dimensioni, comportamento, vocalizzazioni e necessità cambiano notevolmente da una specie all'altra.</p>
-      </div>
-    </section>
-
-    <section class="world-map-section" id="mappa">
-      <div class="section-wrap">
-        <div class="section-heading">
-          <div>
-            <div class="section-kicker">DISTRIBUZIONE GEOGRAFICA</div>
-            <h2>I pappagalli <em>nel mondo.</em></h2>
-            <p class="muted">Esplora le aree d’origine delle specie del catalogo. Seleziona un punto per scoprire quali pappagalli sono associati a quella regione.</p>
-          </div>
-          <span class="catalog-label">ATLANTE INTERATTIVO ↗</span>
-        </div>
-        <div class="map-layout">
-          <div id="parrotWorldMap" class="world-map" role="application" aria-label="Mappa interattiva delle aree d’origine dei pappagalli">
-            <p class="map-loading">Caricamento della mappa…</p>
-          </div>
-          <aside class="map-sidebar">
-            <h3>Specie per area</h3>
-            <p class="map-help">Seleziona un’area sulla mappa o nell’elenco. Apri una specie per consultare la sua scheda.</p>
-            <button type="button" class="map-reset-button" id="mapShowWorld">Mostra il mondo intero ↗</button>
-            <div id="mapRegionList" class="map-region-list"><p class="muted">Preparazione dei dati…</p></div>
-            <p class="map-disclaimer">Le posizioni sono indicative e rappresentano aree geografiche generali, non confini scientifici o località esatte. Alcune specie hanno distribuzioni più ampie o frammentate.</p>
-          </aside>
-        </div>
       </div>
     </section>
 
@@ -146,6 +121,32 @@
           <span>🦜</span>
           <h3>Nessuna specie trovata</h3>
           <p>Prova a modificare la ricerca o i filtri selezionati.</p>
+        </div>
+      </div>
+    </section>
+
+
+    <section class="world-map-section" id="mappa">
+      <div class="section-wrap">
+        <div class="section-heading">
+          <div>
+            <div class="section-kicker">DISTRIBUZIONE GEOGRAFICA</div>
+            <h2>I pappagalli <em>nel mondo.</em></h2>
+            <p class="muted">Esplora le aree d’origine delle specie del catalogo. Seleziona un punto per scoprire quali pappagalli sono associati a quella regione.</p>
+          </div>
+          <span class="catalog-label">ATLANTE INTERATTIVO ↗</span>
+        </div>
+        <div class="map-layout">
+          <div id="parrotWorldMap" class="world-map" role="application" aria-label="Mappa interattiva delle aree d’origine dei pappagalli">
+            <p class="map-loading">Caricamento della mappa…</p>
+          </div>
+          <aside class="map-sidebar">
+            <h3>Specie per area</h3>
+            <p class="map-help">Seleziona un’area sulla mappa o nell’elenco. Apri una specie per consultare la sua scheda.</p>
+            <button type="button" class="map-reset-button" id="mapShowWorld">Mostra il mondo intero ↗</button>
+            <div id="mapRegionList" class="map-region-list"><p class="muted">Preparazione dei dati…</p></div>
+            <p class="map-disclaimer">Le posizioni sono indicative e rappresentano aree geografiche generali, non confini scientifici o località esatte. Alcune specie hanno distribuzioni più ampie o frammentate.</p>
+          </aside>
         </div>
       </div>
     </section>
@@ -306,11 +307,6 @@
   </dialog>
 
   <section class="paco-widget" aria-label="Chatta con Paco">
-    <button class="paco-launcher" id="pacoLauncher" type="button" aria-expanded="false" aria-controls="pacoPanel">
-      <span class="paco-launcher-avatar" aria-hidden="true">🦜</span>
-      <span class="paco-launcher-label">Chiedi a Paco</span>
-      <span class="paco-launcher-dot" aria-hidden="true"></span>
-    </button>
     <section class="paco-panel" id="pacoPanel" aria-label="Chat con Paco" hidden>
       <header class="paco-header">
         <div class="paco-avatar" aria-hidden="true">🦜</div>
