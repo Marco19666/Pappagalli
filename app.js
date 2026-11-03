@@ -874,7 +874,13 @@ function setupPaco() {
   const send = $("#pacoSend");
   if (!launcher || !panel || !form) return;
 
-  let questionsUsed = Number(sessionStorage.getItem(PACO_SESSION_KEY) || 0);
+  // sessionStorage può essere bloccato da alcuni browser o modalità privacy.
+  let questionsUsed = 0;
+  try {
+    questionsUsed = Number(sessionStorage.getItem(PACO_SESSION_KEY) || 0);
+  } catch {
+    questionsUsed = 0;
+  }
   if (!Number.isFinite(questionsUsed) || questionsUsed < 0) questionsUsed = 0;
 
   function setOpen(open) {
@@ -897,7 +903,7 @@ function setupPaco() {
   }
 
   launcher.addEventListener("click", () => setOpen(panel.hidden));
-  close.addEventListener("click", () => setOpen(false));
+  if (close) close.addEventListener("click", () => setOpen(false));
 
   form.addEventListener("submit", async event => {
     event.preventDefault();
@@ -930,7 +936,7 @@ function setupPaco() {
       }
       addMessage(data.answer || "Squawk! Non ho ricevuto una risposta. Riprova!", "paco-message-bot");
       questionsUsed += 1;
-      sessionStorage.setItem(PACO_SESSION_KEY, String(questionsUsed));
+      try { sessionStorage.setItem(PACO_SESSION_KEY, String(questionsUsed)); } catch { /* La chat continua anche senza memoria di sessione. */ }
       answered = true;
     } catch (error) {
       waiting.remove();
@@ -1152,20 +1158,25 @@ function observeDynamicTranslations() {
 
 function init() {
   $("#currentYear").textContent = new Date().getFullYear();
-  setupLanguageSelector();
-  setupInstallApp();
-  observeDynamicTranslations();
-  setupFilters();
-  setupDialog();
-  setupMenu();
-  setupWeightCalculator();
-  setupQuiz();
-  setupComparison();
-  setupPhotoQuiz();
-  setupJournal();
-  setupCuriosita();
-  setupPaco();
-  loadSpecies();
+
+  // Carica subito il catalogo: un eventuale errore in un componente secondario
+  // non deve lasciare l'atlante bloccato sul messaggio di caricamento.
+  loadSpecies().catch(error => {
+    const grid = $("#speciesGrid");
+    if (grid) grid.innerHTML = '<div class="loading-state"><strong>Non riesco a caricare il catalogo.</strong><p>Ricarica la pagina tra poco.</p></div>';
+    console.error("Caricamento atlante non riuscito:", error);
+  });
+
+  const initializers = [
+    setupLanguageSelector, setupInstallApp, observeDynamicTranslations,
+    setupFilters, setupDialog, setupMenu, setupWeightCalculator, setupQuiz,
+    setupComparison, setupPhotoQuiz, setupJournal, setupCuriosita, setupPaco
+  ];
+  initializers.forEach(setup => {
+    try { setup(); }
+    catch (error) { console.error("Inizializzazione componente non riuscita:", setup.name, error); }
+  });
+
   applyLanguageToPage();
 }
 
