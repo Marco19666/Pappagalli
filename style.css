@@ -620,16 +620,15 @@ body, button, input, select, textarea {
   .site-header nav .language-picker select { max-width: 120px; }
 }
 
-/* Pulsante Installa app: collocato nella hero, fuori dal menu di navigazione */
+/* Pulsante Installa app: stesso colore dei pulsanti principali della hero */
 .button-install {
-  background: transparent;
-  color: #ffffff;
-  border: 1px solid rgba(255,255,255,.72);
+  background: var(--lime);
+  color: var(--green-dark);
+  border: 0;
 }
 .button-install:hover, .button-install.install-app-ready {
-  background: #d5ee86;
-  border-color: #d5ee86;
-  color: #102f28;
+  background: var(--lime);
+  color: var(--green-dark);
 }
 .button-install[hidden] { display: none !important; }
 @media (max-width: 650px) {
