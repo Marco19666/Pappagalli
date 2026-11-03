@@ -619,3 +619,9 @@ body, button, input, select, textarea {
   }
   .site-header nav .language-picker select { max-width: 120px; }
 }
+
+/* Pulsante per installare ParrotWorld come app */
+.install-app-button { border: 1px solid #b8c9ad; background: #edf4e8; color: var(--green); border-radius: 22px; padding: 9px 13px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+.install-app-button:hover, .install-app-button.install-app-ready { background: var(--lime); border-color: var(--lime); }
+.install-app-button[hidden] { display: none !important; }
+@media (max-width: 650px) { .install-app-button { align-self: flex-start; } }
