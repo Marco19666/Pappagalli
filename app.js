@@ -790,6 +790,71 @@ function renderWorldMap() {
   setTimeout(() => worldMap.invalidateSize(), 100);
 }
 
+
+const PACO_WORKER_URL = "https://paco-ai.chiccovision.workers.dev/";
+
+function setupPaco() {
+  const launcher = $("#pacoLauncher");
+  const panel = $("#pacoPanel");
+  const close = $("#pacoClose");
+  const form = $("#pacoForm");
+  const input = $("#pacoInput");
+  const messages = $("#pacoMessages");
+  const send = $("#pacoSend");
+  if (!launcher || !panel || !form) return;
+
+  function setOpen(open) {
+    panel.hidden = !open;
+    launcher.setAttribute("aria-expanded", String(open));
+    if (open) input.focus();
+  }
+
+  function addMessage(text, kind) {
+    const bubble = document.createElement("div");
+    bubble.className = "paco-message " + kind;
+    bubble.textContent = text;
+    messages.appendChild(bubble);
+    messages.scrollTop = messages.scrollHeight;
+    return bubble;
+  }
+
+  launcher.addEventListener("click", () => setOpen(panel.hidden));
+  close.addEventListener("click", () => setOpen(false));
+
+  form.addEventListener("submit", async event => {
+    event.preventDefault();
+    const question = input.value.trim();
+    if (!question || send.disabled) return;
+
+    addMessage(question, "paco-message-user");
+    input.value = "";
+    send.disabled = true;
+    input.disabled = true;
+    const waiting = addMessage("Paco sta pensando…", "paco-message-status");
+
+    try {
+      const response = await fetch(PACO_WORKER_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: question, language: "it" })
+      });
+      const data = await response.json().catch(() => ({}));
+      waiting.remove();
+      if (!response.ok) {
+        throw new Error(data.details || data.error || "Il servizio non è disponibile.");
+      }
+      addMessage(data.answer || "Squawk! Non ho ricevuto una risposta. Riprova!", "paco-message-bot");
+    } catch (error) {
+      waiting.remove();
+      addMessage("Ops! In questo momento non riesco a rispondere. Riprova tra poco. (" + error.message + ")", "paco-message-bot");
+    } finally {
+      send.disabled = false;
+      input.disabled = false;
+      input.focus();
+    }
+  });
+}
+
 function init() {
   $("#currentYear").textContent = new Date().getFullYear();
   setupFilters();
@@ -801,6 +866,7 @@ function init() {
   setupPhotoQuiz();
   setupJournal();
   setupCuriosita();
+  setupPaco();
   loadSpecies();
 }
 
