@@ -4,8 +4,21 @@
 const $ = (selector) => document.querySelector(selector);
 const STORAGE_KEYS = {
   favorites: "parrotworld_favorites_v1",
-  journal: "parrotworld_journal_v1"
+  journal: "parrotworld_journal_v1",
+  language: "parrotworld_language_v1"
 };
+
+const SUPPORTED_LANGUAGES = ["it", "en", "es", "fr", "de"];
+const WIKIPEDIA_LINK_LABELS = {
+  it: "Consulta la scheda su Wikipedia",
+  en: "View the Wikipedia article",
+  es: "Consultar el artículo en Wikipedia",
+  fr: "Consulter l’article sur Wikipédia",
+  de: "Wikipedia-Artikel ansehen"
+};
+let currentLanguage = localStorage.getItem(STORAGE_KEYS.language) || "it";
+if (!SUPPORTED_LANGUAGES.includes(currentLanguage)) currentLanguage = "it";
+let currentSpeciesId = null;
 
 let species = [];
 let favorites = loadStorage(STORAGE_KEYS.favorites, []);
@@ -217,6 +230,7 @@ function toggleFavorite(id) {
 function openSpecies(id) {
   const item = species.find(entry => entry.id === id);
   if (!item) return;
+  currentSpeciesId = id;
 
   const detail = $("#speciesDetail");
   detail.innerHTML = `
@@ -243,7 +257,7 @@ function openSpecies(id) {
     <p class="detail-text"><strong>Nota:</strong> dimensioni, peso e longevità sono valori orientativi, variabili tra individui e sottospecie. Verifica sempre le informazioni con fonti specialistiche.</p>
     <a class="sound-link" href="https://xeno-canto.org/explore?query=${encodeURIComponent(item.scientific)}" target="_blank" rel="noopener noreferrer">♫ Cerca e ascolta registrazioni del verso su Xeno-canto ↗</a>
     <p class="audio-note">Si apre l'archivio di registrazioni naturalistiche: la disponibilità dipende dalla specie e i file sono pubblicati dai contributori.</p>
-    <a class="source-link" href="${safeWikipediaUrl(item.source)}" target="_blank" rel="noopener noreferrer">Consulta la scheda di Wikipedia ↗</a>
+    <a class="source-link" href="${wikipediaSearchUrl(item)}" target="_blank" rel="noopener noreferrer">${WIKIPEDIA_LINK_LABELS[currentLanguage]} ↗</a>
   `;
 
   const dialog = $("#speciesDialog");
@@ -278,14 +292,23 @@ async function loadDetailImage(item, container) {
   }
 }
 
-function safeWikipediaUrl(url) {
-  try {
-    const parsed = new URL(url);
-    return parsed.protocol === "https:" && parsed.hostname === "en.wikipedia.org"
-      ? parsed.href : "https://en.wikipedia.org/";
-  } catch {
-    return "https://en.wikipedia.org/";
-  }
+function wikipediaSearchUrl(item) {
+  const language = SUPPORTED_LANGUAGES.includes(currentLanguage) ? currentLanguage : "it";
+  const query = `${item.common} ${item.scientific}`.trim();
+  return `https://${language}.wikipedia.org/w/index.php?search=${encodeURIComponent(query)}`;
+}
+
+function setupLanguageSelector() {
+  const selector = $("#languageSelect");
+  if (!selector) return;
+  selector.value = currentLanguage;
+  document.documentElement.lang = currentLanguage;
+  selector.addEventListener("change", () => {
+    currentLanguage = SUPPORTED_LANGUAGES.includes(selector.value) ? selector.value : "it";
+    localStorage.setItem(STORAGE_KEYS.language, currentLanguage);
+    document.documentElement.lang = currentLanguage;
+    if (currentSpeciesId) openSpecies(currentSpeciesId);
+  });
 }
 
 function escapeHTML(value = "") {
@@ -881,6 +904,7 @@ function setupPaco() {
 
 function init() {
   $("#currentYear").textContent = new Date().getFullYear();
+  setupLanguageSelector();
   setupFilters();
   setupDialog();
   setupMenu();
