@@ -296,6 +296,40 @@ function wikipediaArticleUrl(item) {
   return safeWikipediaUrl(item.source);
 }
 
+let deferredInstallPrompt = null;
+
+function setupInstallApp() {
+  const button = $("#installAppButton");
+  if (!button) return;
+  const isStandalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+  if (isStandalone) { button.hidden = true; return; }
+  window.addEventListener("beforeinstallprompt", event => {
+    event.preventDefault();
+    deferredInstallPrompt = event;
+    button.classList.add("install-app-ready");
+  });
+  window.addEventListener("appinstalled", () => { deferredInstallPrompt = null; button.hidden = true; });
+  button.addEventListener("click", async () => {
+    if (deferredInstallPrompt) {
+      deferredInstallPrompt.prompt();
+      await deferredInstallPrompt.userChoice;
+      deferredInstallPrompt = null;
+      button.classList.remove("install-app-ready");
+      return;
+    }
+    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    const message = isIOS
+      ? "Per installare ParrotWorld: tocca Condividi nel browser, poi «Aggiungi alla schermata Home».":
+      : "Per installare ParrotWorld, apri il menu del browser e scegli «Installa app» oppure «Aggiungi a schermata Home». Se l’opzione non compare, usa un browser compatibile e verifica che il sito sia raggiunto tramite HTTPS.";
+    window.alert(message);
+  });
+  if ("serviceWorker" in navigator && location.protocol === "https:") {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./service-worker.js").catch(error => console.warn("Registrazione modalità app non riuscita:", error));
+    }, { once: true });
+  }
+}
+
 function setupLanguageSelector() {
   const selector = $("#languageSelect");
   if (!selector) return;
@@ -1119,6 +1153,7 @@ function observeDynamicTranslations() {
 function init() {
   $("#currentYear").textContent = new Date().getFullYear();
   setupLanguageSelector();
+  setupInstallApp();
   observeDynamicTranslations();
   setupFilters();
   setupDialog();
