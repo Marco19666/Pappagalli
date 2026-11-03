@@ -257,7 +257,7 @@ function openSpecies(id) {
     <p class="detail-text"><strong>Nota:</strong> dimensioni, peso e longevità sono valori orientativi, variabili tra individui e sottospecie. Verifica sempre le informazioni con fonti specialistiche.</p>
     <a class="sound-link" href="https://xeno-canto.org/explore?query=${encodeURIComponent(item.scientific)}" target="_blank" rel="noopener noreferrer">♫ Cerca e ascolta registrazioni del verso su Xeno-canto ↗</a>
     <p class="audio-note">Si apre l'archivio di registrazioni naturalistiche: la disponibilità dipende dalla specie e i file sono pubblicati dai contributori.</p>
-    <a class="source-link" href="${wikipediaSearchUrl(item)}" target="_blank" rel="noopener noreferrer">${WIKIPEDIA_LINK_LABELS[currentLanguage]} ↗</a>
+    <a class="source-link" href="${wikipediaArticleUrl(item)}" target="_blank" rel="noopener noreferrer">${WIKIPEDIA_LINK_LABELS[currentLanguage]} ↗</a>
   `;
 
   const dialog = $("#speciesDialog");
@@ -292,9 +292,8 @@ async function loadDetailImage(item, container) {
   }
 }
 
-function wikipediaSearchUrl(item) {
-  const query = `${item.common} ${item.scientific}`.trim();
-  return `https://en.wikipedia.org/w/index.php?search=${encodeURIComponent(query)}`;
+function wikipediaArticleUrl(item) {
+  return safeWikipediaUrl(item.source);
 }
 
 function setupLanguageSelector() {
@@ -304,6 +303,7 @@ function setupLanguageSelector() {
   selector.addEventListener("change", () => {
     currentLanguage = SUPPORTED_LANGUAGES.includes(selector.value) ? selector.value : "it";
     localStorage.setItem(STORAGE_KEYS.language, currentLanguage);
+    applyLanguageToPage();
     if (currentSpeciesId) openSpecies(currentSpeciesId);
   });
 }
@@ -909,9 +909,129 @@ function setupPaco() {
   });
 }
 
+
+/* Traduzione automatica dell'interfaccia e dei contenuti visibili.
+   I valori originali restano in memoria, così il cambio lingua non accumula traduzioni. */
+const translationOriginals = new WeakMap();
+const translatedNodes = new WeakSet();
+const translationCache = new Map();
+let translationObserver = null;
+let translationQueue = Promise.resolve();
+
+function isTranslatableText(value) {
+  const text = String(value || "").trim();
+  if (!text || !/[A-Za-zÀ-ÿ]/.test(text)) return false;
+  if (/^[A-Z][a-z]+ [a-z][a-z]+$/.test(text)) return false;
+  if (/^(https?:|©|\d|[↔◷♡♥🦜🥬🌿🩺🤝⚖️🧠🔎])/.test(text)) return false;
+  return true;
+}
+
+async function translateText(value, language) {
+  if (language === "it" || !value.trim()) return value;
+  const key = language + "::" + value;
+  if (translationCache.has(key)) return translationCache.get(key);
+  const stored = loadStorage("parrotworld_translations_v1", {});
+  if (stored[key]) {
+    translationCache.set(key, stored[key]);
+    return stored[key];
+  }
+  const endpoint = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=it&tl=" +
+    encodeURIComponent(language) + "&dt=t&q=" + encodeURIComponent(value);
+  const response = await fetch(endpoint);
+  if (!response.ok) throw new Error("Servizio di traduzione non disponibile");
+  const data = await response.json();
+  const translated = Array.isArray(data?.[0])
+    ? data[0].map(part => part?.[0] || "").join("")
+    : value;
+  translationCache.set(key, translated);
+  stored[key] = translated;
+  try { saveStorage("parrotworld_translations_v1", stored); } catch {}
+  return translated;
+}
+
+async function translateTextNode(node, language) {
+  if (!node || !node.isConnected) return;
+  if (!translationOriginals.has(node)) translationOriginals.set(node, node.nodeValue);
+  const original = translationOriginals.get(node);
+  if (!isTranslatableText(original)) return;
+  if (language === "it") {
+    if (node.nodeValue !== original) node.nodeValue = original;
+    translatedNodes.add(node);
+    return;
+  }
+  try {
+    const translated = await translateText(original, language);
+    if (node.isConnected && currentLanguage === language) {
+      node.nodeValue = translated;
+      translatedNodes.add(node);
+    }
+  } catch {
+    // In caso di indisponibilità della traduzione il testo originale resta leggibile.
+  }
+}
+
+function collectTextNodes(root) {
+  const nodes = [];
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+    acceptNode(node) {
+      if (!isTranslatableText(node.nodeValue)) return NodeFilter.FILTER_REJECT;
+      if (node.parentElement?.closest("script,style,noscript,textarea,input,select,option")) {
+        return NodeFilter.FILTER_REJECT;
+      }
+      return NodeFilter.FILTER_ACCEPT;
+    }
+  });
+  while (walker.nextNode()) nodes.push(walker.currentNode);
+  return nodes;
+}
+
+function applyLanguageToPage() {
+  const language = currentLanguage;
+  if (language === "it") {
+    collectTextNodes(document.body).forEach(node => {
+      if (translationOriginals.has(node)) node.nodeValue = translationOriginals.get(node);
+    });
+    document.documentElement.lang = "it";
+    return;
+  }
+  const nodes = collectTextNodes(document.body);
+  translationQueue = translationQueue.then(async () => {
+    const batchSize = 6;
+    for (let i = 0; i < nodes.length; i += batchSize) {
+      if (currentLanguage !== language) return;
+      await Promise.all(nodes.slice(i, i + batchSize).map(node => translateTextNode(node, language)));
+    }
+  });
+  document.documentElement.lang = language;
+}
+
+function observeDynamicTranslations() {
+  if (translationObserver) translationObserver.disconnect();
+  translationObserver = new MutationObserver(records => {
+    if (currentLanguage === "it") return;
+    const added = [];
+    records.forEach(record => {
+      record.addedNodes.forEach(node => {
+        if (node.nodeType === Node.TEXT_NODE) added.push(node);
+        else if (node.nodeType === Node.ELEMENT_NODE) added.push(...collectTextNodes(node));
+      });
+    });
+    if (!added.length) return;
+    const language = currentLanguage;
+    translationQueue = translationQueue.then(async () => {
+      for (let i = 0; i < added.length; i += 6) {
+        if (currentLanguage !== language) return;
+        await Promise.all(added.slice(i, i + 6).map(node => translateTextNode(node, language)));
+      }
+    });
+  });
+  translationObserver.observe(document.body, { childList: true, subtree: true });
+}
+
 function init() {
   $("#currentYear").textContent = new Date().getFullYear();
   setupLanguageSelector();
+  observeDynamicTranslations();
   setupFilters();
   setupDialog();
   setupMenu();
@@ -923,6 +1043,7 @@ function init() {
   setupCuriosita();
   setupPaco();
   loadSpecies();
+  applyLanguageToPage();
 }
 
 document.addEventListener("DOMContentLoaded", init);
