@@ -1,0 +1,316 @@
+<!-- ParrotWorld - copia dedicata a CodePen. Il sito principale non viene modificato. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<link rel="stylesheet" href="https://raw.githubusercontent.com/Marco19666/Pappagalli/main/style.css">
+<header class="site-header">
+    <a class="brand" href="#home" aria-label="ParrotWorld home">
+      <span class="brand-mark">P</span>
+      <span>parrot<span class="brand-light">world</span></span>
+    </a>
+    <button class="menu-toggle" id="menuToggle" aria-label="Apri menu" aria-expanded="false" aria-controls="mainNav">☰</button>
+    <nav id="mainNav" aria-label="Navigazione principale">
+      <a href="#esplora">Specie</a>
+      <a href="#mappa">Mappa</a>
+      <a href="#guide">Benessere</a>
+      <a href="#strumenti">Giochi e strumenti</a>
+      <a href="#diario">Il mio diario</a>
+      <a href="#info">Progetto</a>
+      <label class="language-picker" aria-label="Seleziona la lingua"><span class="language-picker-label">Lingua</span><select id="languageSelect" aria-label="Seleziona la lingua"><option value="it">🇮🇹 Italiano</option><option value="en">🇬🇧 English</option><option value="es">🇪🇸 Español</option><option value="fr">🇫🇷 Français</option><option value="de">🇩🇪 Deutsch</option></select></label>
+    </nav>
+    <button class="paco-launcher header-cta" id="pacoLauncher" type="button" aria-expanded="false" aria-controls="pacoPanel"><span class="paco-launcher-avatar" aria-hidden="true">🦜</span><span class="paco-launcher-label">Chiedi a Paco</span><span class="paco-launcher-dot" aria-hidden="true"></span></button>
+  </header>
+
+  <main>
+    <section class="hero" id="home">
+      <div class="hero-content">
+        <div class="eyebrow"><span class="eyebrow-dot"></span> IL PORTALE DEDICATO AI PSITTACIFORMI</div>
+        <h1>Un mondo di colori.<br><em>Un universo</em> da scoprire.</h1>
+        <p>Esplora le specie di pappagalli, impara a conoscerne le esigenze e scopri come proteggerle con consapevolezza.</p>
+        <div class="hero-actions">
+          <a class="button button-light" href="#esplora">Esplora le specie <span>→</span></a>
+          <a class="button button-light" href="#guide">Impara a prendertene cura <span>↗</span></a>
+        </div>
+        <div class="hero-facts">
+          <div><strong id="speciesCount">—</strong><span>specie nel catalogo</span></div>
+          <div><strong>100%</strong><span>dedicato alla conoscenza</span></div>
+          <div><strong>∞</strong><span>curiosità da scoprire</span></div>
+        </div>
+      </div>
+      <div class="hero-art" aria-label="Illustrazione decorativa di pappagalli">
+        <div class="hero-orbit orbit-one"></div>
+        <div class="hero-orbit orbit-two"></div>
+        <div class="hero-bird">🦜</div>
+        <div class="floating-note note-one">Biodiversità <span>✳</span></div>
+        <div class="hero-stamp">DISCOVER<br>THE WILD</div>
+      </div>
+      <div class="hero-bottom"><span>SCORRI PER ESPLORARE</span><span class="scroll-line"></span><span>01 / 05</span></div>
+    </section>
+
+    <section class="intro section-wrap">
+      <div class="section-kicker">CONOSCERE PER PROTEGGERE</div>
+      <div class="intro-grid">
+        <h2>Intelligenza, carattere<br>e <em>straordinaria diversità.</em></h2>
+        <p>I pappagalli appartengono all'ordine degli Psittaciformi. Sono uccelli dalle caratteristiche molto diverse: dimensioni, comportamento, vocalizzazioni e necessità cambiano notevolmente da una specie all'altra.</p>
+      </div>
+    </section>
+
+    <section class="explore-section" id="esplora">
+      <div class="section-wrap">
+        <div class="section-heading">
+          <div>
+            <div class="section-kicker">ATLANTE DELLE SPECIE</div>
+            <h2>Trova il tuo <em>pappagallo.</em></h2>
+            <p class="muted">Cerca nel catalogo e confronta le caratteristiche delle diverse specie.</p>
+          </div>
+          <span class="catalog-label">CATALOGO INTERATTIVO ↘</span>
+        </div>
+
+        <div class="search-panel">
+          <label class="search-box">
+            <span>⌕</span>
+            <input type="search" id="searchInput" placeholder="Cerca per nome comune o scientifico..." autocomplete="off">
+            <kbd>⌘ K</kbd>
+          </label>
+          <div class="filter-row">
+            <label>Categoria
+              <select id="categoryFilter">
+                <option value="">Tutte le categorie</option>
+              </select>
+            </label>
+            <label>Esperienza richiesta
+              <select id="experienceFilter">
+                <option value="">Qualsiasi livello</option>
+                <option value="Principiante">Principiante</option>
+                <option value="Intermedio">Intermedio</option>
+                <option value="Esperto">Esperto</option>
+              </select>
+            </label>
+            <label>Ordina per
+              <select id="sortFilter">
+                <option value="name">Nome A–Z</option>
+                <option value="size">Dimensione</option>
+                <option value="lifespan">Longevità</option>
+              </select>
+            </label>
+            <button class="reset-button" id="resetFilters">Azzera filtri ↺</button>
+          </div>
+        </div>
+
+        <div class="results-bar">
+          <span id="resultsCount">Caricamento catalogo...</span>
+          <button class="favorites-filter" id="favoritesOnly">♡ Solo preferiti</button>
+        </div>
+        <div class="species-grid" id="speciesGrid">
+          <div class="loading-state">Sto preparando l'atlante dei pappagalli…</div>
+        </div>
+        <div class="empty-state hidden" id="emptyState">
+          <span>🦜</span>
+          <h3>Nessuna specie trovata</h3>
+          <p>Prova a modificare la ricerca o i filtri selezionati.</p>
+        </div>
+      </div>
+    </section>
+
+
+    <section class="world-map-section" id="mappa">
+      <div class="section-wrap">
+        <div class="section-heading">
+          <div>
+            <div class="section-kicker">DISTRIBUZIONE GEOGRAFICA</div>
+            <h2>I pappagalli <em>nel mondo.</em></h2>
+            <p class="muted">Esplora le aree d’origine delle specie del catalogo. Seleziona un punto per scoprire quali pappagalli sono associati a quella regione.</p>
+          </div>
+          <span class="catalog-label">ATLANTE INTERATTIVO ↗</span>
+        </div>
+        <div class="map-layout">
+          <div id="parrotWorldMap" class="world-map" role="application" aria-label="Mappa interattiva delle aree d’origine dei pappagalli">
+            <p class="map-loading">Caricamento della mappa…</p>
+          </div>
+          <aside class="map-sidebar">
+            <h3>Specie per area</h3>
+            <p class="map-help">Seleziona un’area sulla mappa o nell’elenco. Apri una specie per consultare la sua scheda.</p>
+            <button type="button" class="map-reset-button" id="mapShowWorld">Mostra il mondo intero ↗</button>
+            <div id="mapRegionList" class="map-region-list"><p class="muted">Preparazione dei dati…</p></div>
+            <p class="map-disclaimer">Le posizioni sono indicative e rappresentano aree geografiche generali, non confini scientifici o località esatte. Alcune specie hanno distribuzioni più ampie o frammentate.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="care-section" id="guide">
+      <div class="section-wrap">
+        <div class="section-heading">
+          <div>
+            <div class="section-kicker">CURA RESPONSABILE</div>
+            <h2>Il benessere viene <em>prima di tutto.</em></h2>
+            <p class="muted">Conoscere le esigenze di un pappagallo è il primo passo per rispettarlo.</p>
+          </div>
+        </div>
+        <div class="guide-grid">
+          <article class="guide-card guide-feature">
+            <span class="guide-number">01 / ALIMENTAZIONE</span>
+            <div class="guide-icon">🥬</div>
+            <h3>Una dieta varia ed equilibrata</h3>
+            <p>L'alimentazione deve essere formulata in base alla specie, all'età e alle condizioni individuali. Gli alimenti freschi vanno introdotti correttamente e la dieta concordata con un veterinario esperto in animali esotici.</p>
+            <a href="#guida-alimentazione">Approfondisci <span>↗</span></a>
+          </article>
+          <article class="guide-card">
+            <span class="guide-number">02 / AMBIENTE</span>
+            <div class="guide-icon">🌿</div>
+            <h3>Spazio e stimoli</h3>
+            <p>Un ambiente sicuro, ampio e arricchito favorisce il movimento, l'esplorazione e i comportamenti naturali.</p>
+            <a href="#guida-ambiente">Approfondisci <span>↗</span></a>
+          </article>
+          <article class="guide-card">
+            <span class="guide-number">03 / SALUTE</span>
+            <div class="guide-icon">🩺</div>
+            <h3>Prevenzione e controlli</h3>
+            <p>Controlli periodici e attenzione ai cambiamenti di comportamento aiutano a individuare precocemente eventuali problemi.</p>
+            <a href="#guida-salute">Approfondisci <span>↗</span></a>
+          </article>
+          <article class="guide-card">
+            <span class="guide-number">04 / RELAZIONE</span>
+            <div class="guide-icon">🤝</div>
+            <h3>Tempo e socialità</h3>
+            <p>I pappagalli sono animali intelligenti e sociali. Hanno bisogno di interazione, rispetto dei loro tempi e stimolazione quotidiana.</p>
+            <a href="#guida-relazione">Approfondisci <span>↗</span></a>
+          </article>
+        </div>
+
+        <div class="guide-details">
+          <article id="guida-alimentazione"><h3>Alimentazione</h3><p>La base della dieta va scelta in base alla specie e alle indicazioni di un veterinario esperto. Introduci gradualmente gli alimenti freschi, evita cibi tossici come avocado, cioccolato, alcol e caffeina e lascia sempre acqua pulita a disposizione.</p></article>
+          <article id="guida-ambiente"><h3>Ambiente</h3><p>Prevedi spazio per muoversi e volare in sicurezza, posatoi di materiali e diametri diversi, giochi da ruotare e occasioni quotidiane di ricerca del cibo. Rendi la casa sicura eliminando fumi, vapori di pentole antiaderenti surriscaldate e piante potenzialmente tossiche.</p></article>
+          <article id="guida-salute"><h3>Salute</h3><p>Programma controlli con un veterinario esperto in animali esotici. Cambiamenti di appetito, peso, feci, respirazione o comportamento meritano attenzione tempestiva: gli uccelli spesso nascondono i segni di malessere.</p></article>
+          <article id="guida-relazione"><h3>Relazione e socialità</h3><p>Rispetta i tempi dell'animale e costruisci fiducia con interazioni brevi e positive. Evita punizioni e forzature; offri attività mentali, routine prevedibili e opportunità di scelta.</p></article>
+        </div>
+        <div class="warning-note"><span>✳</span><p><strong>Importante:</strong> le informazioni di questa guida hanno finalità divulgative e non sostituiscono il parere di un veterinario esperto in animali esotici. Non acquistare o detenere specie protette senza aver verificato la normativa e la documentazione CITES applicabile.</p></div>
+      </div>
+    </section>
+
+    <section class="tools-section" id="strumenti">
+      <div class="section-wrap">
+        <div class="section-kicker">PICCOLI STRUMENTI UTILI</div>
+        <h2>Osserva, annota, <em>impara.</em></h2>
+        <div class="tools-grid">
+          <article class="tool-card">
+            <span class="tool-icon">⚖️</span>
+            <h3>Calcolo variazione peso</h3>
+            <p>Confronta due misurazioni registrate nel tempo.</p>
+            <div class="tool-inputs">
+              <label>Peso precedente (g)<input type="number" id="oldWeight" min="0" placeholder="Es. 420"></label>
+              <label>Peso attuale (g)<input type="number" id="newWeight" min="0" placeholder="Es. 415"></label>
+            </div>
+            <button class="button button-dark" id="calculateWeight">Calcola variazione</button>
+            <p class="tool-result" id="weightResult" aria-live="polite"></p>
+          </article>
+          <article class="tool-card">
+            <span class="tool-icon">🧠</span>
+            <h3>Quiz: quanto ne sai?</h3>
+            <p>Metti alla prova le tue conoscenze sui pappagalli.</p>
+            <div id="quizArea">
+              <p class="quiz-question" id="quizQuestion">Qual è il nome dell'ordine a cui appartengono i pappagalli?</p>
+              <div class="quiz-options" id="quizOptions">
+                <button data-answer="0">Passeriformi</button>
+                <button data-answer="1">Psittaciformi</button>
+                <button data-answer="0">Galliformi</button>
+              </div>
+              <p class="tool-result" id="quizResult" aria-live="polite"></p>
+              <button class="text-link quiz-next hidden" id="nextQuestion">Prossima domanda →</button>
+            </div>
+          </article>
+          <article class="tool-card comparison-card">
+            <span class="tool-icon">⚖️</span>
+            <h3>Confronta due specie</h3>
+            <p>Scegli due pappagalli e confronta a colpo d'occhio le loro caratteristiche.</p>
+            <div class="compare-selects">
+              <label>Prima specie<select id="compareFirst"></select></label>
+              <label>Seconda specie<select id="compareSecond"></select></label>
+            </div>
+            <div id="comparisonResult" class="comparison-result" aria-live="polite"></div>
+          </article>
+          <article class="tool-card photo-quiz-card">
+            <span class="tool-icon">🔎</span>
+            <h3>Indovina la specie</h3>
+            <p>Osserva la fotografia e scegli il nome corretto.</p>
+            <div id="photoQuizImage" class="photo-quiz-image"><span>Prepariamo la sfida…</span></div>
+            <div id="photoQuizOptions" class="quiz-options"></div>
+            <p id="photoQuizResult" class="tool-result" aria-live="polite"></p>
+            <button class="text-link hidden" id="nextPhotoQuestion" type="button">Altra specie →</button>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="curiosity-section">
+      <div class="section-wrap curiosity-inner">
+        <div><div class="section-kicker">UNA PICCOLA SCOPERTA</div><h2>Lo sapevi <em>che…?</em></h2></div>
+        <div class="curiosity-card"><p id="curiosityText" aria-live="polite">Scopri una curiosità sul mondo dei pappagalli.</p><button class="button button-dark" id="newCuriosity" type="button">Un'altra curiosità ↻</button></div>
+      </div>
+    </section>
+
+    <section class="journal-section" id="diario">
+      <div class="section-wrap journal-grid">
+        <div>
+          <div class="section-kicker">IL TUO SPAZIO PERSONALE</div>
+          <h2>Un diario per<br><em>ogni osservazione.</em></h2>
+          <p class="muted">Annota pesi, comportamenti e note. I dati vengono salvati nel browser del tuo dispositivo.</p>
+          <div class="privacy-note">🔒 Le note restano sul dispositivo e non vengono inviate a un server.</div>
+        </div>
+        <form class="journal-form" id="journalForm">
+          <label>Nome del pappagallo<input type="text" id="birdName" placeholder="Es. Kiwi" required></label>
+          <div class="form-two">
+            <label>Data<input type="date" id="entryDate" required></label>
+            <label>Peso (g)<input type="number" id="entryWeight" min="0" placeholder="Es. 380"></label>
+          </div>
+          <label>Osservazioni<textarea id="entryNotes" rows="4" placeholder="Comportamento, appetito, attività..."></textarea></label>
+          <button class="button button-dark" type="submit">Salva annotazione ↗</button>
+          <p class="tool-result" id="journalMessage" aria-live="polite"></p>
+          <div id="journalEntries" class="journal-entries"></div>
+          <button class="text-link" type="button" id="exportJournal">Esporta diario in CSV ↓</button>
+        </form>
+      </div>
+    </section>
+
+    <section class="closing-section" id="info">
+      <div class="closing-content">
+        <div class="section-kicker">CONOSCENZA · RISPETTO · CONSERVAZIONE</div>
+        <h2>La bellezza della natura<br>merita <em>rispetto.</em></h2>
+        <p>Informarsi è il primo passo per proteggere la biodiversità. Sostieni la conservazione degli habitat naturali e scegli sempre comportamenti responsabili.</p>
+        <a class="button button-light" href="#esplora">Torna all'atlante ↑</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <a class="brand" href="#home"><span class="brand-mark">P</span><span>parrot<span class="brand-light">world</span></span></a>
+    <p>Un progetto divulgativo dedicato al mondo dei pappagalli.</p>
+    <span>© <span id="currentYear"></span> ParrotWorld</span>
+  </footer>
+
+  <dialog class="species-dialog" id="speciesDialog">
+    <button class="dialog-close" id="dialogClose" aria-label="Chiudi">×</button>
+    <div id="speciesDetail"></div>
+  </dialog>
+
+  <section class="paco-widget" aria-label="Chatta con Paco">
+    <section class="paco-panel" id="pacoPanel" aria-label="Chat con Paco" hidden>
+      <header class="paco-header">
+        <div class="paco-avatar" aria-hidden="true">🦜</div>
+        <div class="paco-heading"><strong>Paco</strong><span>La mascotte di ParrotWorld</span></div>
+        <button class="paco-close" id="pacoClose" type="button" aria-label="Chiudi chat">×</button>
+      </header>
+      <div class="paco-messages" id="pacoMessages" aria-live="polite">
+        <div class="paco-message paco-message-bot">Squawk! Ciao! Sono Paco. 🦜 Chiedimi tutto sui pappagalli!</div>
+      </div>
+      <form class="paco-form" id="pacoForm">
+        <label class="paco-sr-only" for="pacoInput">Scrivi una domanda sui pappagalli</label>
+        <input id="pacoInput" type="text" maxlength="1000" placeholder="Scrivi una domanda..." autocomplete="off" required>
+        <button id="pacoSend" type="submit" aria-label="Invia messaggio">➤</button>
+      </form>
+      <p class="paco-footnote">Paco risponde a domande sui pappagalli. Le risposte AI possono contenere imprecisioni.</p>
+    </section>
+  </section>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://raw.githubusercontent.com/Marco19666/Pappagalli/main/codepen.js"></script>
